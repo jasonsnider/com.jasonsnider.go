@@ -1,0 +1,156 @@
+@import 'main.scss';
+
+@keyframes fadeIn {
+  0% {
+    opacity:0;
+  }
+  100% {
+    opacity:1;
+  }
+}
+
+@keyframes coverFade{
+  50% {
+    background: #000;
+  }
+  60% {
+    background: #111;
+  }
+  70% {
+    background: #222;
+  }
+  80% {
+    background: #333;
+  }
+  90% {
+    background: #444;
+  }
+  100% {
+    background: #333;
+  }
+}
+
+body {
+  display: block;
+  animation: fadeIn ease 8s;
+}
+.cover {
+  animation: coverFade ease 16s;
+  height: 100vh;
+  margin: 0;
+  background: #333;
+  position: relative;
+}
+
+.cover h1 {
+  color: #fff;
+  text-align: center;
+  font-size: 2.2rem;
+  top: calc(50vh - 2rem);
+  position: absolute;
+  right: 0;
+  left: 0;
+  font-weight: normal;
+  padding: 0;
+  margin: 0;
+  text-shadow: 2px 4px 3px rgba(0, 0, 0, 0.3);
+  letter-spacing: .7rem;
+}
+
+.cover div.tagline {
+  //position: absolute;
+  font-size: 1rem;
+  //top: calc(50vh + 1rem);
+  //right: 0;
+  //left: 0;
+  text-align: center;
+  color: #fff;
+  letter-spacing: .2rem;
+  text-shadow: 2px 4px 3px rgba(0, 0, 0, 0.3);
+}
+
+.cover div.more {
+  position: absolute;
+  bottom: 18px;
+  right: 0;
+  left: 0;
+  text-align: center;
+  color: #fff;
+  font-size: 5rem;
+  letter-spacing: .2rem;
+  text-shadow: 2px 4px 3px rgba(0, 0, 0, 0.3);
+}
+
+.cover .more a,
+.cover .more a:link,
+.cover .more a:visited{
+  color: #fff;
+}
+
+main {
+  margin: 0 auto;
+}
+
+
+#About img{
+  float: left;
+  margin-right: 1rem;
+  border-radius: 50%;
+}
+
+@media only screen and (min-device-width : 0) and (orientation : landscape) {
+  .cover h1 {
+    font-size: 3.1rem;
+    letter-spacing: .9rem;
+  }
+
+  .cover div.tagline {
+    font-size: 2rem;
+    top: calc(50vh + 2rem);
+  }
+}
+
+@media only screen and (min-width : 400px) {
+  .cover h1 {
+    font-size: 3.3rem;
+    position: absolute;
+    top: calc(50vh - 3rem);
+    letter-spacing: .7rem;
+  }
+
+  .cover div.tagline {
+    top: calc(50vh + 3rem);
+    font-size: 1.4rem;
+    letter-spacing: .2rem;
+  }
+}
+
+@media only screen and (min-width : 642px) {
+  .cover h1 {
+    font-size: 6.6rem;
+    position: absolute;
+    top: calc(50vh - 3rem);
+    letter-spacing: .9rem;
+  }
+
+  .cover div.tagline {
+    top: calc(50vh + 3rem);
+    font-size: 2.6rem;
+    letter-spacing: .3rem;
+  }
+}
+
+
+@media only screen and (min-width : 960px) {
+  .cover h1 {
+    font-size: 8rem;
+    position: absolute;
+    top: calc(50vh - 8rem);
+    letter-spacing: .9rem;
+  }
+
+  .cover div.tagline {
+    //top: calc(50vh + 3rem);
+    font-size: 3rem;
+  }
+}

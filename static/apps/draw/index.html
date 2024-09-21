@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Draw on Canvas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css" type="text/css">
+    <link rel="stylesheet" href="./dist/css/main.css" type="text/css">
+
+  </head>
+  <body>
+
+    <div class="wrapper">
+      <nav>
+
+        <ul>
+
+          <li class="flex">
+            <div id="trackX">X: 0</div>
+            <div id="trackY">Y: 0</div>
+          </li>
+
+          <li><button id="btnRect">Rectangle</button></li>
+
+          <li><button id="btnLine">Line</button></li>
+
+          <li><button id="btnCircle">Circle</button></li>
+
+          <li><button id="btnPath">Path</button></li>
+
+          <li><button id="btnTriangle">Triangle</button></li>
+
+          <li><button id="btn3Point">3 Point Triangle</button></li>
+
+          <li><button id="btnClear">Clear</button></li>
+
+          <li><button id="btnRedraw">Redraw</button></li>
+          
+          <li class="flex">
+            <div>
+                <label for="strokeColor">Stroke</label>
+                <input type="color" id="strokeColor"><br><br>
+                <input type="checkbox" id="randStrokeColor">
+                <label for="randStrokeColor">Random</label>
+            </div>
+
+            <div>
+              <label for="fillColor">Fill</label>
+              <input type="color" id="fillColor"><br><br>
+              <input type="checkbox" id="randFillColor">
+              <label for="randFillColor">Random</label>
+            </div>
+          </li>
+
+        </ul>
+
+      </nav>
+
+      <main></main>
+
+    </div>
+    <script src="./dist/js/main.js"></script>
+  </body>
+</html>
