@@ -5,7 +5,7 @@ import (
 	"html/template"
 	"net/http"
 
-	"github.com/jasonsnider/com.jasonsnider.com/templates"
+	"github.com/jasonsnider/com.jasonsnider.go/templates"
 )
 
 func (app *App) Dashboard(w http.ResponseWriter, r *http.Request) {

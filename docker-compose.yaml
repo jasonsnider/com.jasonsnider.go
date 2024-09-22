@@ -14,11 +14,14 @@ services:
       
   postgres:
     image: postgres:alpine
-
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
     ports:
       - "${DATABASE_PORT}:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
 
   redis:
     image: redis:latest
@@ -51,5 +54,5 @@ services:
       - goapp
 
 volumes:
-  pgdata:
+  postgres-data:
   redis-data:

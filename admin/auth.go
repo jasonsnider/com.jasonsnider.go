@@ -8,8 +8,8 @@ import (
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/jasonsnider/com.jasonsnider.com/pkg/passwords"
-	"github.com/jasonsnider/com.jasonsnider.com/templates"
+	"github.com/jasonsnider/com.jasonsnider.go/pkg/passwords"
+	"github.com/jasonsnider/com.jasonsnider.go/templates"
 )
 
 type Auth struct {

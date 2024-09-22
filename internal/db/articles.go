@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/jasonsnider/com.jasonsnider.com/internal/types"
+	"github.com/jasonsnider/com.jasonsnider.go/internal/types"
 )
 
 type DB struct {

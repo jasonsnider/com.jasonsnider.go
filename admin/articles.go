@@ -8,7 +8,7 @@ import (
 
 	"github.com/gomarkdown/markdown"
 	"github.com/gorilla/mux"
-	"github.com/jasonsnider/com.jasonsnider.com/templates"
+	"github.com/jasonsnider/com.jasonsnider.go/templates"
 )
 
 type Article struct {

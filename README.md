@@ -1,4 +1,4 @@
-# com.jasonsnider.com
+# com.jasonsnider.go
 
 A go based implementation of jasonsnider.com, for the sake of learning Go.
 
