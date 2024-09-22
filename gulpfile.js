@@ -33,7 +33,7 @@ function version(){
 }
 
 function setVersion(type) {
-  fs.writeFile(`./web/assets/bust/${type}.txt`, version(), function(err) {
+  fs.writeFile(`./assets/bust/${type}.txt`, version(), function(err) {
     if(err) {
         return console.log(err);
     }
@@ -43,14 +43,14 @@ function setVersion(type) {
 function buildMainCSS(){
 
   var full = gulp.src([
-    'web/assets/src/scss/main.scss'
+    'assets/src/scss/main.scss'
   ])
   . pipe(scss())
   . pipe(concat('main.css'))
   . pipe(gulp.dest('static/dist/css'));
 
   var min = gulp.src([
-    'web/assets/src/scss/main.scss'
+    'assets/src/scss/main.scss'
   ])
   . pipe(scss())
   . pipe(cleanCSS())
@@ -64,14 +64,14 @@ function buildMainCSS(){
 function buildHomeCSS(){
 
   var full = gulp.src([
-    'web/assets/src/scss/home-page.scss'
+    'assets/src/scss/home-page.scss'
   ])
   . pipe(scss())
   . pipe(concat('home-page.css'))
   . pipe(gulp.dest('static/dist/css'));
 
   var min = gulp.src([
-    'web/assets/src/scss/home-page.scss'
+    'assets/src/scss/home-page.scss'
   ])
   . pipe(scss())
   . pipe(cleanCSS())
@@ -86,14 +86,14 @@ function buildHomeCSS(){
 function buildAppCSS(){
 
   var full = gulp.src([
-    'web/assets/src/scss/app.scss'
+    'assets/src/scss/app.scss'
   ])
   . pipe(scss())
   . pipe(concat('app.min.css'))
   . pipe(gulp.dest('static/dist/css'));
 
   var min = gulp.src([
-    'web/assets/src/scss/app.scss'
+    'assets/src/scss/app.scss'
   ])
   . pipe(scss())
   . pipe(cleanCSS())
@@ -108,15 +108,15 @@ function buildAppCSS(){
 function buildHomeJS() {
 
   var full = gulp.src([
-    'web/assets/src/js/main.js',
-    'web/assets/src/js/home.js',
+    'assets/src/js/main.js',
+    'assets/src/js/home.js',
   ])
   .pipe(concat('home-page.js'))
   .pipe(gulp.dest('static/dist/js'));
 
   var min = gulp.src([
-    'web/assets/src/js/main.js',
-    'web/assets/src/js/home.js',
+    'assets/src/js/main.js',
+    'assets/src/js/home.js',
   ])
   .pipe(concat('home-page.min.js'))
   .pipe(uglify())
@@ -129,15 +129,15 @@ function buildHomeJS() {
 function buildArticleJS() {
 
   var full = gulp.src([
-    'web/assets/src/js/main.js',
-    'web/assets/src/js/article.js',
+    'assets/src/js/main.js',
+    'assets/src/js/article.js',
   ])
   .pipe(concat('article.js'))
   .pipe(gulp.dest('static/dist/js'));
 
   var min = gulp.src([
-    'web/assets/src/js/main.js',
-    'web/assets/src/js/article.js',
+    'assets/src/js/main.js',
+    'assets/src/js/article.js',
   ])
   .pipe(concat('article.min.js'))
   .pipe(uglify())
@@ -153,7 +153,7 @@ function buildHashJS(){
   var hash = gulp.src([
     'node_modules/jssha/src/sha.js',
     'node_modules/js-md5/src/md5.js',
-    'web/assets/src/js/tools/hash.js'
+    'assets/src/js/tools/hash.js'
   ])
   .pipe(concat('hash.min.js'))
   .pipe(uglify())
@@ -166,14 +166,14 @@ function buildHashJS(){
 function buildAppJS() {
 
   var full = gulp.src([
-    'web/assets/src/js/app.js'
+    'assets/src/js/app.js'
   ])
   .pipe(concat('app.js'))
   .pipe(uglify())
   .pipe(gulp.dest('static/dist/js'));
 
   var min = gulp.src([
-    'web/assets/src/js/app.js'
+    'assets/src/js/app.js'
   ])
   .pipe(concat('app.min.js'))
   .pipe(uglify())
@@ -187,14 +187,14 @@ function buildAppJS() {
 function buildAuthAppJS() {
 
   var full = gulp.src([
-    'web/assets/src/js/app.auth.js'
+    'assets/src/js/app.auth.js'
   ])
   .pipe(concat('app.auth.js'))
   .pipe(uglify())
   .pipe(gulp.dest('static/dist/js'));
 
   var min = gulp.src([
-    'web/assets/src/js/app.auth.js'
+    'assets/src/js/app.auth.js'
   ])
   .pipe(concat('app.auth.min.js'))
   .pipe(uglify())
@@ -207,13 +207,13 @@ function buildAuthAppJS() {
 function buildCmsAppJS() {
 
   var full = gulp.src([
-    'web/assets/src/js/app.cms.js'
+    'assets/src/js/app.cms.js'
   ])
   .pipe(concat('app.cms.js'))
   .pipe(gulp.dest('static/dist/js'));
 
   var min = gulp.src([
-    'web/assets/src/js/app.cms.js'
+    'assets/src/js/app.cms.js'
   ])
   .pipe(concat('app.cms.min.js'))
   .pipe(uglify())
@@ -224,14 +224,14 @@ function buildCmsAppJS() {
 }
 
 function watchFiles() {
-  gulp.watch(['./web/assets/src/scss/main.scss'], buildMainCSS);
-  gulp.watch(['./web/assets/src/scss/main.scss', './web/assets/src/scss/home-page.scss'], buildHomeCSS);
-  gulp.watch('./web/assets/src/scss/app.scss', buildAppCSS);
-  gulp.watch(['./web/assets/src/js/main.js', './web/assets/src/js/home.js'], buildHomeJS);
-  gulp.watch(['./web/assets/src/js/main.js', './web/assets/src/js/article.js'], buildArticleJS);
-  gulp.watch('./web/assets/src/js/app.auth.js', buildAuthAppJS);
-  gulp.watch('./web/assets/src/js/app.js', buildAppJS);
-  gulp.watch('./web/assets/src/js/app.cms.js', buildCmsAppJS);
+  gulp.watch(['./assets/src/scss/main.scss'], buildMainCSS);
+  gulp.watch(['./assets/src/scss/main.scss', './assets/src/scss/home-page.scss'], buildHomeCSS);
+  gulp.watch('./assets/src/scss/app.scss', buildAppCSS);
+  gulp.watch(['./assets/src/js/main.js', './assets/src/js/home.js'], buildHomeJS);
+  gulp.watch(['./assets/src/js/main.js', './assets/src/js/article.js'], buildArticleJS);
+  gulp.watch('./assets/src/js/app.auth.js', buildAuthAppJS);
+  gulp.watch('./assets/src/js/app.js', buildAppJS);
+  gulp.watch('./assets/src/js/app.cms.js', buildCmsAppJS);
 }
 
 gulp.task('build-app-css', buildAppCSS);
