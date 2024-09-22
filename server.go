@@ -10,10 +10,10 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/jasonsnider/go.jasonsnider.com/admin"
-	"github.com/jasonsnider/go.jasonsnider.com/api/v1"
-	"github.com/jasonsnider/go.jasonsnider.com/pkg/passwords"
-	"github.com/jasonsnider/go.jasonsnider.com/web"
+	"github.com/jasonsnider/com.jasonsnider.com/admin"
+	"github.com/jasonsnider/com.jasonsnider.com/api/v1"
+	"github.com/jasonsnider/com.jasonsnider.com/pkg/passwords"
+	"github.com/jasonsnider/com.jasonsnider.com/web"
 	"github.com/joho/godotenv"
 )
 

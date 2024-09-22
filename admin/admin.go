@@ -7,8 +7,8 @@ import (
 	"github.com/boj/redistore"
 	"github.com/gorilla/mux"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/jasonsnider/go.jasonsnider.com/pkg/auth"
-	"github.com/jasonsnider/go.jasonsnider.com/pkg/cache"
+	"github.com/jasonsnider/com.jasonsnider.com/pkg/auth"
+	"github.com/jasonsnider/com.jasonsnider.com/pkg/cache"
 )
 
 type App struct {

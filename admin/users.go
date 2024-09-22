@@ -9,8 +9,8 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
-	"github.com/jasonsnider/go.jasonsnider.com/pkg/passwords"
-	"github.com/jasonsnider/go.jasonsnider.com/templates"
+	"github.com/jasonsnider/com.jasonsnider.com/pkg/passwords"
+	"github.com/jasonsnider/com.jasonsnider.com/templates"
 )
 
 type RegisterUser struct {
