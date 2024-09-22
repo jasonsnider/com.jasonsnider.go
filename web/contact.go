@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/jasonsnider/go.jasonsnider.com/templates"
+	"github.com/jasonsnider/com.jasonsnider.go/templates"
 	"github.com/mailgun/mailgun-go"
 )
 

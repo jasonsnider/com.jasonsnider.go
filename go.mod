@@ -1,4 +1,4 @@
-module github.com/jasonsnider/go.jasonsnider.com
+module github.com/jasonsnider/com.jasonsnider.go
 
 go 1.23.1
 

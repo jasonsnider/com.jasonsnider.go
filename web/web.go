@@ -3,7 +3,7 @@ package web
 import (
 	"github.com/gorilla/mux"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/jasonsnider/go.jasonsnider.com/pkg/cache"
+	"github.com/jasonsnider/com.jasonsnider.go/pkg/cache"
 )
 
 type App struct {

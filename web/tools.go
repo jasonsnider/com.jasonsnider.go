@@ -6,7 +6,9 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/jasonsnider/go.jasonsnider.com/templates"
+	"github.com/jasonsnider/com.jasonsnider.go/internal/db"
+	"github.com/jasonsnider/com.jasonsnider.go/internal/types"
+	"github.com/jasonsnider/com.jasonsnider.go/templates"
 )
 
 type ToolPageData struct {
@@ -19,7 +21,16 @@ type ToolPageData struct {
 }
 
 func (app *App) ListTools(w http.ResponseWriter, r *http.Request) {
-	articles, err := app.FetchArticlesByType("tool")
+
+	db := db.DB{DB: app.DB}
+
+	meta, err := db.FetchMetaDataBySlug("games")
+	if err != nil {
+		http.Error(w, fmt.Sprintf("FetchArticlesBySlug failed: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	articles, err := db.FetchArticlesByType("tool")
 
 	if err != nil {
 		http.Error(w, fmt.Sprintf("FetchArticlesByType failed: %v", err), http.StatusInternalServerError)
@@ -42,9 +53,9 @@ func (app *App) ListTools(w http.ResponseWriter, r *http.Request) {
 	tmpl = template.Must(tmpl.New("content").Parse(articlesTemplate))
 
 	pageData := ArticlesPageData{
-		Title:        "Articles",
-		Description:  "A list of articles",
-		Keywords:     "articles, blog",
+		Title:        meta.Title,
+		Description:  meta.Description,
+		Keywords:     meta.Keywords,
 		Articles:     articles,
 		BustCssCache: app.BustCssCache,
 		BustJsCache:  app.BustJsCache,
@@ -57,11 +68,12 @@ func (app *App) ListTools(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *App) ViewTool(w http.ResponseWriter, r *http.Request) {
+	db := db.DB{DB: app.DB}
 	vars := mux.Vars(r)
 	slug := vars["slug"]
 
-	var article Article
-	article, err := app.FetchArticleBySlug(slug)
+	var article types.Article
+	article, err := db.FetchArticleBySlug(slug)
 
 	if err != nil {
 		http.Error(w, fmt.Sprintf("FetchArticleBySlug failed: %v", err), http.StatusInternalServerError)
