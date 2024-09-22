@@ -84,7 +84,6 @@ func (app *App) ViewTool(w http.ResponseWriter, r *http.Request) {
 		"mdToHTML": mdToHTML,
 	}
 
-	// Define the tools
 	tools := map[string]string{
 		"hash": `
             <div>
@@ -109,10 +108,8 @@ func (app *App) ViewTool(w http.ResponseWriter, r *http.Request) {
 			<script src="/dist/js/tools/strlen.js"></script>`,
 	}
 
-	// Select the tool based on the article slug
 	selectedTool := tools[article.Slug]
 
-	// Combine the article body with the selected tool
 	body := mdToHTML(article.Body) + template.HTML(selectedTool)
 
 	articleTemplate := `

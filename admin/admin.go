@@ -39,17 +39,16 @@ func AdminRouter(dbpool *pgxpool.Pool) *mux.Router {
 
 	router := mux.NewRouter()
 
-	router.HandleFunc("/login", app.Authenticate).Methods("GET")
-	router.HandleFunc("/login", app.Authenticate).Methods("POST")
+	router.HandleFunc("/admin/login", app.Authenticate).Methods("GET")
+	router.HandleFunc("/admin/login", app.Authenticate).Methods("POST")
+
+	router.HandleFunc("/admin/register", app.RegisterUser).Methods("GET")
+	router.HandleFunc("/admin/register", app.RegisterUser).Methods("POST")
 
 	protected := router.PathPrefix("/admin").Subrouter()
 	protected.Use(auth.AuthRequired)
 
 	protected.HandleFunc("/dashboard", app.Dashboard).Methods("GET")
-
-	protected.HandleFunc("/register", app.RegisterUser).Methods("GET")
-	protected.HandleFunc("/register", app.RegisterUser).Methods("POST")
-
 	protected.HandleFunc("/users", app.ListUsers).Methods("GET")
 	protected.HandleFunc("/users/{id}", app.ViewUser).Methods("GET")
 	protected.HandleFunc("/users/{id}/edit", app.UpdateUser).Methods("GET")

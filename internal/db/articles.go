@@ -4,13 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jasonsnider/com.jasonsnider.go/internal/types"
 )
-
-type DB struct {
-	DB *pgxpool.Pool
-}
 
 func (db *DB) FetchArticlesByType(articleType string) ([]types.Article, error) {
 	sql := "SELECT id, slug, title, description, keywords, body FROM articles WHERE type=$1"

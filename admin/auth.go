@@ -1,29 +1,17 @@
 package admin
 
 import (
-	"context"
 	"fmt"
 	"html/template"
 	"log"
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/jasonsnider/com.jasonsnider.go/internal/db"
+	"github.com/jasonsnider/com.jasonsnider.go/internal/types"
 	"github.com/jasonsnider/com.jasonsnider.go/pkg/passwords"
 	"github.com/jasonsnider/com.jasonsnider.go/templates"
 )
-
-type Auth struct {
-	Email    string `json:"email" validate:"required,email"`
-	Password string `json:"password" validate:"required"`
-}
-
-type AuthUser struct {
-	ID        string `db:"id"`
-	FirstName string `json:"first_name" validate:"required"`
-	LastName  string `json:"last_name" validate:"required"`
-	Email     string `json:"email" validate:"required,email"`
-	Hash      string `db:"hash"`
-}
 
 type AuthTemplate struct {
 	Title            string
@@ -31,30 +19,21 @@ type AuthTemplate struct {
 	Keywords         string
 	Body             string
 	ValidationErrors map[string]string
-	Auth             Auth
+	Auth             types.Auth
 	BustCssCache     string
 	BustJsCache      string
 }
 
-func (app *App) FetchAuth(email string) (AuthUser, error) {
-	var user AuthUser
-	err := app.DB.QueryRow(context.Background(), "SELECT id, first_name, last_name, email, hash FROM users WHERE email=$1", email).Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &user.Hash)
-	if err != nil {
-		return user, fmt.Errorf("query failed: %v", err)
-	}
-
-	return user, nil
-}
-
 func (app *App) Authenticate(w http.ResponseWriter, r *http.Request) {
 
-	auth := Auth{}
+	db := db.DB{DB: app.DB}
+	auth := types.Auth{}
 	validationErrors := make(map[string]string)
 
 	if r.Method == "POST" {
 		validate := validator.New()
 
-		auth = Auth{
+		auth = types.Auth{
 			Email:    r.FormValue("email"),
 			Password: r.FormValue("password"),
 		}
@@ -80,7 +59,7 @@ func (app *App) Authenticate(w http.ResponseWriter, r *http.Request) {
 			}
 		} else {
 
-			user, err := app.FetchAuth(auth.Email)
+			user, err := db.FetchAuth(auth.Email)
 
 			if err == nil {
 

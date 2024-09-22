@@ -87,9 +87,9 @@ func (app *App) Contact(w http.ResponseWriter, r *http.Request) {
 	tmpl = template.Must(tmpl.New("article").Parse(contactTemplate))
 
 	pageData := ArticlePageData{
-		Title:        "Jason Snider",
-		Description:  "Jason Snider",
-		Keywords:     "Jason Snider",
+		Title:        "Contact",
+		Description:  "Contact Jason Snider",
+		Keywords:     "contact, email",
 		Body:         contactTemplate,
 		BustCssCache: app.BustCssCache,
 		BustJsCache:  app.BustJsCache,

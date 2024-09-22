@@ -1,67 +1,33 @@
 package admin
 
 import (
-	"context"
 	"fmt"
 	"html/template"
 	"log"
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/gorilla/mux"
 	"github.com/jasonsnider/com.jasonsnider.go/internal/db"
 	"github.com/jasonsnider/com.jasonsnider.go/internal/types"
 	"github.com/jasonsnider/com.jasonsnider.go/templates"
 )
 
-type UserUpdateTemplate struct {
-	Title            string
-	Description      string
-	Keywords         string
-	Body             string
-	ValidationErrors map[string]string
-	User             types.User
-	BustCssCache     string
-	BustJsCache      string
-}
-
-func (app *App) CreateUser(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Create User")
-}
-
-func (app *App) ListUsers(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Read Users")
-}
-
-func (app *App) ViewUser(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Read User")
-}
-
-func (app *App) UpdateUser(w http.ResponseWriter, r *http.Request) {
+func (app *App) RegisterUser(w http.ResponseWriter, r *http.Request) {
 
 	db := db.DB{DB: app.DB}
-	vars := mux.Vars(r)
-	id := vars["id"]
-
-	var user types.User
-	user, err := db.FetchUserById(id)
-
-	if err != nil {
-		http.Error(w, fmt.Sprintf("FetchUserById failed: %v", err), http.StatusInternalServerError)
-		return
-	}
-
+	user := types.RegisterUser{}
 	validationErrors := make(map[string]string)
 
-	fmt.Println("GET")
 	if r.Method == "POST" {
-		fmt.Println("POST")
 		validate := validator.New()
 
-		user.ID = r.FormValue("id")
-		user.FirstName = r.FormValue("first_name")
-		user.LastName = r.FormValue("last_name")
-		user.Email = r.FormValue("email")
+		user = types.RegisterUser{
+			FirstName:       r.FormValue("first_name"),
+			LastName:        r.FormValue("last_name"),
+			Email:           r.FormValue("email"),
+			Password:        r.FormValue("password"),
+			ConfirmPassword: r.FormValue("confirm_password"),
+		}
 
 		err := validate.Struct(user)
 
@@ -87,37 +53,20 @@ func (app *App) UpdateUser(w http.ResponseWriter, r *http.Request) {
 				validationErrors[fieldName] = errorMessage
 			}
 		} else {
-
-			query := `
-				UPDATE users
-				SET first_name = $1, last_name = $2, email = $3, username='bob', admin=true
-				WHERE id = $4
-			`
-
-			tx, err := app.DB.Begin(context.Background())
+			// Register the user
+			err = db.RegisterUser(user)
 			if err != nil {
-				log.Fatalf("begin transaction failed: %v", err)
+				log.Fatalf("failed to register user: %v", err)
 			}
 
-			_, err = tx.Exec(context.Background(), query, user.FirstName, user.LastName, user.Email, user.ID)
-			if err != nil {
-				tx.Rollback(context.Background())
-				log.Fatalf("update failed: %v", err)
-			}
-
-			err = tx.Commit(context.Background())
-			if err != nil {
-				log.Fatalf("commit transaction failed: %v", err)
-			}
-
+			log.Println("User registered successfully")
 		}
 	}
 
 	pageTemplate := `
 	{{define "content"}}
-		<h1>Edit</h1>
-		<form action="/admin/users/edit/{{.User.ID}}" method="POST">
-			<input type="hidden" name="id" value="{{.User.ID}}">
+		<h1>Register</h1>
+		<form action="/admin/register" method="POST">
 			<div class="{{if index .ValidationErrors "FirstName"}}error{{end}}">
 				<label for="first_name">First Name</label>
 				<input type="text" id="FirstName" name="first_name" value="{{.User.FirstName}}">
@@ -133,7 +82,17 @@ func (app *App) UpdateUser(w http.ResponseWriter, r *http.Request) {
 				<input type="email" id="email" name="email" value="{{.User.Email}}">
 				<div>{{if index .ValidationErrors "Email"}}{{index .ValidationErrors "Email"}}{{end}}</div>
 			</div>
-			<button type="submit">Submit</button>
+			<div class="{{if index .ValidationErrors "Password"}}error{{end}}">
+				<label for="body">Password</label>
+				<input type="password" id="password" name="password" value="{{.User.Password}}">
+				<div>{{if index .ValidationErrors "Password"}}{{index .ValidationErrors "Password"}}{{end}}</div>
+			</div>
+			<div class="{{if index .ValidationErrors "ConfirmPassword"}}error{{end}}">
+				<label for="confirm_password">Confirm Password</label>
+				<input type="password" id="confirm_password" name="confirm_password" value="{{.User.ConfirmPassword}}">
+				<div>{{if index .ValidationErrors "ConfirmPassword"}}{{index .ValidationErrors "ConfirmPassword"}}{{end}}</div>
+			</div>
+			<button type="submit">Register</button>
 		</form>
 	{{end}}
 	`
@@ -142,7 +101,7 @@ func (app *App) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	tmpl = template.Must(tmpl.New("meta").Parse(templates.MetaDataTemplate))
 	tmpl = template.Must(tmpl.New("registration").Parse(pageTemplate))
 
-	pageData := UserUpdateTemplate{
+	pageData := UserRegistrationTemplate{
 		Title:            "Register your account",
 		Description:      "Register your account",
 		Keywords:         "resgistration",
@@ -153,12 +112,8 @@ func (app *App) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		BustJsCache:      app.BustJsCache,
 	}
 
-	err = tmpl.ExecuteTemplate(w, "layout", pageData)
+	err := tmpl.ExecuteTemplate(w, "layout", pageData)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Template execution failed: %v", err), http.StatusInternalServerError)
 	}
-}
-
-func (app *App) DeleteUser(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Delete User")
 }
