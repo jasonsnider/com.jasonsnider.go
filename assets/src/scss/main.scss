@@ -399,3 +399,11 @@ input[type="submit"]:hover{
     font-size: 1.4rem;
   }
 }
+
+.row {
+  display: flex;
+}
+
+.col {
+  padding: .5rem;
+}

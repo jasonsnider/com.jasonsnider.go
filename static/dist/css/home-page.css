@@ -318,6 +318,12 @@ input[type="submit"]:hover {
     font-weight: bold;
     font-size: 1.4rem; } }
 
+.row {
+  display: flex; }
+
+.col {
+  padding: .5rem; }
+
 @keyframes fadeIn {
   0% {
     opacity: 0; }

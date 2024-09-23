@@ -97,7 +97,7 @@ func (app *App) Authenticate(w http.ResponseWriter, r *http.Request) {
 	pageTemplate := `
 	{{define "content"}}
 		<h1>Login</h1>
-		<form action="/login" method="POST">
+		<form action="/admin/login" method="POST">
 			<div class="{{if index .ValidationErrors "Email"}}error{{end}}">
 				<label for="subject">Email</label>
 				<input type="email" id="email" name="email" value="{{.Auth.Email}}">
