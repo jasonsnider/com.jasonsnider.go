@@ -1,5 +1,6 @@
 services:
 
+  # Infrastructure
   goapp:
     image: golang:alpine
     working_dir: /app
@@ -10,7 +11,7 @@ services:
       - postgres
       - redis
     ports:
-      - "8080:8080"
+      - ":8080"
     restart: on-failure
       
   postgres:
