@@ -13,10 +13,14 @@ func (app *App) Dashboard(w http.ResponseWriter, r *http.Request) {
 	pageTemplate := `
 	{{define "content"}}
 		<h1>Dashboard</h1>
+		<div>
+			<a href="/admin/articles">Articles</a>&nbsp;|&nbsp; 
+			<a href="/admin/users">Users</a>
+		</div>
 	{{end}}
 	`
 
-	tmpl := template.Must(template.New("layout").Parse(templates.MainLayoutTemplate))
+	tmpl := template.Must(template.New("layout").Parse(templates.AdminLayoutTemplate))
 	tmpl = template.Must(tmpl.New("meta").Parse(templates.MetaDataTemplate))
 	tmpl = template.Must(tmpl.New("dashboard").Parse(pageTemplate))
 

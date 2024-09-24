@@ -122,3 +122,40 @@ const HomePageTemplate = `
 </body>
 </html>
 `
+
+const AdminLayoutTemplate = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {{template "meta" .}}
+	<base href="/">
+	<link rel="stylesheet" href="/fonts/fonts.css?{{.BustCssCache}}">
+	<link rel="stylesheet" href="/fontawesome/css/all.min.css">
+	<link rel="stylesheet" href="/dist/css/app.min.css?{{.BustCssCache}}">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+
+	<div class="wrapper">
+
+	<aside>
+		<ul>
+			<li><a href="/admin/dashboard"><i class="fas fa-home"></i></a></li>
+			<li><a href="/admin/users"><i class="fas fa-user"></i></a></li>
+			<li><a href="/admin/articles"><i class="fas fa-newspaper"></i></a></li>
+		</ul>
+	</aside>
+
+	<main>
+		{{template "content" .}}
+	</main>
+
+	</div>
+
+	<footer>
+		<div class="container">&copy; 2007-2024 jasonsnider.com</div>
+	</footer>
+	<script src="/dist/js/app.min.js?{{.BustJsCache}}"></script>
+</body>
+</html>
+`

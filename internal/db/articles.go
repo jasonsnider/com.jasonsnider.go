@@ -32,14 +32,24 @@ func (db *DB) FetchArticlesByType(articleType string) ([]types.Article, error) {
 	return articles, nil
 }
 
-func (db *DB) FetchArticleBySlug(slug string) (types.Article, error) {
+func (db *DB) FetchArticleByID(id string) (types.Article, error) {
 	var article types.Article
-	sql := "SELECT id, slug, title, description, keywords, body FROM articles WHERE slug=$1"
-	err := db.DB.QueryRow(context.Background(), sql, slug).Scan(&article.ID, &article.Slug, &article.Title, &article.Description, &article.Keywords, &article.Body)
+	sql := "SELECT id, title, slug, body, keywords, description FROM articles WHERE id=$1"
+	err := db.DB.QueryRow(context.Background(), sql, id).Scan(&article.ID, &article.Title, &article.Slug, &article.Body, &article.Keywords, &article.Description)
 	if err != nil {
 		return article, fmt.Errorf("query failed: %v", err)
 	}
 
+	return article, nil
+}
+
+func (db *DB) FetchArticleBySlug(slug string) (types.Article, error) {
+	var article types.Article
+	sql := "SELECT id, title, slug, body, keywords, description FROM articles WHERE slug=$1"
+	err := db.DB.QueryRow(context.Background(), sql, slug).Scan(&article.ID, &article.Title, &article.Slug, &article.Body, &article.Keywords, &article.Description)
+	if err != nil {
+		return article, fmt.Errorf("query failed: %v", err)
+	}
 	return article, nil
 }
 

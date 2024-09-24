@@ -43,14 +43,16 @@ function setVersion(type) {
 function buildMainCSS(){
 
   var full = gulp.src([
-    'assets/src/scss/main.scss'
+    'assets/src/scss/main.scss',
+    'assets/src/scss/navbar.scss'
   ])
   . pipe(scss())
   . pipe(concat('main.css'))
   . pipe(gulp.dest('static/dist/css'));
 
   var min = gulp.src([
-    'assets/src/scss/main.scss'
+    'assets/src/scss/main.scss',
+    'assets/src/scss/navbar.scss'
   ])
   . pipe(scss())
   . pipe(cleanCSS())
@@ -64,14 +66,16 @@ function buildMainCSS(){
 function buildHomeCSS(){
 
   var full = gulp.src([
-    'assets/src/scss/home-page.scss'
+    'assets/src/scss/home-page.scss',
+    'assets/src/scss/navbar.scss'
   ])
   . pipe(scss())
   . pipe(concat('home-page.css'))
   . pipe(gulp.dest('static/dist/css'));
 
   var min = gulp.src([
-    'assets/src/scss/home-page.scss'
+    'assets/src/scss/home-page.scss',
+    'assets/src/scss/navbar.scss'
   ])
   . pipe(scss())
   . pipe(cleanCSS())
@@ -86,14 +90,16 @@ function buildHomeCSS(){
 function buildAppCSS(){
 
   var full = gulp.src([
-    'assets/src/scss/app.scss'
+    'assets/src/scss/app.scss',
+    'assets/src/scss/navbar.scss'
   ])
   . pipe(scss())
   . pipe(concat('app.min.css'))
   . pipe(gulp.dest('static/dist/css'));
 
   var min = gulp.src([
-    'assets/src/scss/app.scss'
+    'assets/src/scss/app.scss',
+    'assets/src/scss/navbar.scss'
   ])
   . pipe(scss())
   . pipe(cleanCSS())
@@ -224,9 +230,9 @@ function buildCmsAppJS() {
 }
 
 function watchFiles() {
-  gulp.watch(['./assets/src/scss/main.scss'], buildMainCSS);
-  gulp.watch(['./assets/src/scss/main.scss', './assets/src/scss/home-page.scss'], buildHomeCSS);
-  gulp.watch('./assets/src/scss/app.scss', buildAppCSS);
+  gulp.watch(['./assets/src/scss/main.scss', './assets/src/scss/navbar.scss'], buildMainCSS);
+  gulp.watch(['./assets/src/scss/main.scss', './assets/src/scss/navbar.scss', './assets/src/scss/home-page.scss'], buildHomeCSS);
+  gulp.watch(['./assets/src/scss/app.scss', './assets/src/scss/navbar.scss'], buildAppCSS);
   gulp.watch(['./assets/src/js/main.js', './assets/src/js/home.js'], buildHomeJS);
   gulp.watch(['./assets/src/js/main.js', './assets/src/js/article.js'], buildArticleJS);
   gulp.watch('./assets/src/js/app.auth.js', buildAuthAppJS);

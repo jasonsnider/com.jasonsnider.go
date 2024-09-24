@@ -10,72 +10,6 @@ body {
 a {
   color: #007899; }
 
-button#ShowMainNav {
-  display: block;
-  margin: 0;
-  padding: 0 1rem;
-  float: right;
-  line-height: 54px;
-  background: transparent;
-  border: none; }
-
-button#ShowMainNav i {
-  line-height: 54px; }
-
-nav#MainNav {
-  color: #fff;
-  background: rgba(30, 30, 30, 0.5);
-  position: fixed;
-  top: 0;
-  right: 0;
-  left: 0;
-  z-index: 10000; }
-
-nav#MainNav ul {
-  float: none;
-  display: none;
-  background: rgba(30, 30, 30, 0.8);
-  margin: 0;
-  padding: 0; }
-
-nav#MainNav ul li {
-  display: inline; }
-
-nav#MainNav a,
-nav#MainNav a:link,
-nav#MainNav a:visited,
-nav#MainNav ul li a,
-nav#MainNav ul li a:link,
-nav#MainNav ul li a:visited {
-  display: inline-block;
-  line-height: 54px;
-  color: #fff;
-  text-decoration: none;
-  padding: 0 1rem;
-  font-weight: bold;
-  font-size: 1.4rem; }
-
-nav#MainNav ul li a,
-nav#MainNav ul li a:link,
-nav#MainNav ul li a:visited {
-  display: block; }
-
-nav#MainNav ul li a:hover {
-  background: red; }
-
-nav#MainNav ul li a:hover {
-  background: #777; }
-
-nav#MainNav ul li a:active {
-  background: #fff;
-  color: #222; }
-
-nav#MainNav {
-  display: block; }
-
-#showMainNav {
-  color: #fff; }
-
 main {
   width: 960px;
   max-width: 90%;
@@ -438,3 +372,69 @@ main {
     letter-spacing: .9rem; }
   .cover div.tagline {
     font-size: 3rem; } }
+
+button#ShowMainNav {
+  display: block;
+  margin: 0;
+  padding: 0 1rem;
+  float: right;
+  line-height: 54px;
+  background: transparent;
+  border: none; }
+
+button#ShowMainNav i {
+  line-height: 54px; }
+
+nav#MainNav {
+  color: #fff;
+  background: rgba(30, 30, 30, 0.5);
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 10000; }
+
+nav#MainNav ul {
+  float: none;
+  display: none;
+  background: rgba(30, 30, 30, 0.8);
+  margin: 0;
+  padding: 0; }
+
+nav#MainNav ul li {
+  display: inline; }
+
+nav#MainNav a,
+nav#MainNav a:link,
+nav#MainNav a:visited,
+nav#MainNav ul li a,
+nav#MainNav ul li a:link,
+nav#MainNav ul li a:visited {
+  display: inline-block;
+  line-height: 54px;
+  color: #fff;
+  text-decoration: none;
+  padding: 0 1rem;
+  font-weight: bold;
+  font-size: 1.4rem; }
+
+nav#MainNav ul li a,
+nav#MainNav ul li a:link,
+nav#MainNav ul li a:visited {
+  display: block; }
+
+nav#MainNav ul li a:hover {
+  background: red; }
+
+nav#MainNav ul li a:hover {
+  background: #777; }
+
+nav#MainNav ul li a:active {
+  background: #fff;
+  color: #222; }
+
+nav#MainNav {
+  display: block; }
+
+#showMainNav {
+  color: #fff; }

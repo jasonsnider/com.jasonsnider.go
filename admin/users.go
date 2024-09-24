@@ -50,21 +50,24 @@ func (app *App) ListUsers(w http.ResponseWriter, r *http.Request) {
 	articlesTemplate := `
         {{define "content"}}
             <h1>Users</h1>
+			<div class="menu">
+				<a href="/admin/users/create">Create</a>
+			</div>
 			{{range .Users}}
-				<div class="row">
+				<div class="row rotate">
 					<div class="col"><a href="/users/{{.ID}}">{{.LastName}}, {{.FirstName}}</a></div>
 					<div class="col">{{.Email}}</div>
 					<div class="col">{{.Role}}</div>
-					<div class="col">
-						<a href="/admin/users/{{.ID}}">View</a>
-						<a href="/admin/users/{{.ID}}/edit">Edit</a>
-						<a href="/admin/users/{{.ID}}/delete">Delete</a>
+					<div class="col-end">
+						<a href="/admin/users/{{.ID}}"><i class="fas fa-eye"></i></a>
+						<a href="/admin/users/{{.ID}}/edit"><i class="fas fa-edit"></i></a>
+						<a href="/admin/users/{{.ID}}/delete"><i class="fas fa-trash"></i></a>
 					</div>
 				</div>
 			{{end}}
         {{end}}
     `
-	tmpl := template.Must(template.New("layout").Parse(templates.MainLayoutTemplate))
+	tmpl := template.Must(template.New("layout").Parse(templates.AdminLayoutTemplate))
 	tmpl = template.Must(tmpl.New("meta").Parse(templates.MetaDataTemplate))
 	tmpl = template.Must(tmpl.New("content").Parse(articlesTemplate))
 
@@ -197,7 +200,7 @@ func (app *App) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	{{end}}
 	`
 
-	tmpl := template.Must(template.New("layout").Parse(templates.MainLayoutTemplate))
+	tmpl := template.Must(template.New("layout").Parse(templates.AdminLayoutTemplate))
 	tmpl = template.Must(tmpl.New("meta").Parse(templates.MetaDataTemplate))
 	tmpl = template.Must(tmpl.New("registration").Parse(pageTemplate))
 

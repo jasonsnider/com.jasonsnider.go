@@ -49,11 +49,22 @@ func AdminRouter(dbpool *pgxpool.Pool) *mux.Router {
 	protected.Use(auth.AuthRequired)
 
 	protected.HandleFunc("/dashboard", app.Dashboard).Methods("GET")
+
+	protected.HandleFunc("/users/create", app.CreateUser).Methods("GET")
+	protected.HandleFunc("/users/create", app.CreateUser).Methods("POST")
 	protected.HandleFunc("/users", app.ListUsers).Methods("GET")
 	protected.HandleFunc("/users/{id}", app.ViewUser).Methods("GET")
 	protected.HandleFunc("/users/{id}/edit", app.UpdateUser).Methods("GET")
 	protected.HandleFunc("/users/{id}/edit", app.UpdateUser).Methods("POST")
 	protected.HandleFunc("/users/{id}/delete", app.DeleteUser).Methods("GET")
+
+	protected.HandleFunc("/articles/create", app.CreateArticle).Methods("GET")
+	protected.HandleFunc("/articles/create", app.CreateArticle).Methods("POST")
+	protected.HandleFunc("/articles", app.ListArticles).Methods("GET")
+	protected.HandleFunc("/articles/{id}", app.ViewArticle).Methods("GET")
+	protected.HandleFunc("/articles/{id}/edit", app.UpdateArticle).Methods("GET")
+	protected.HandleFunc("/articles/{id}/edit", app.UpdateArticle).Methods("POST")
+	protected.HandleFunc("/articles/{id}/delete", app.DeleteArticle).Methods("GET")
 
 	router.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Printf("404 Not Found: %s", r.URL.Path)
