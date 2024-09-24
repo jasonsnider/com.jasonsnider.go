@@ -26,6 +26,19 @@ func (db *DB) RegisterUser(user types.RegisterUser) error {
 	return nil
 }
 
+func (db *DB) CreateUser(user types.CreateUser) error {
+
+	userID := uuid.New()
+
+	sql := "INSERT INTO users (id, first_name, last_name, email, role) VALUES ($1, $2, $3, $4, $5, $6)"
+	_, err := db.DB.Exec(context.Background(), sql, userID, user.FirstName, user.LastName, user.Email)
+	if err != nil {
+		return fmt.Errorf("query failed: %v", err)
+	}
+
+	return nil
+}
+
 func (db *DB) FetchUsers() ([]types.User, error) {
 	sql := "SELECT id, first_name, last_name, email, role FROM users"
 	rows, err := db.DB.Query(context.Background(), sql)

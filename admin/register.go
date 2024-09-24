@@ -97,7 +97,7 @@ func (app *App) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	{{end}}
 	`
 
-	tmpl := template.Must(template.New("layout").Parse(templates.MainLayoutTemplate))
+	tmpl := template.Must(template.New("layout").Parse(templates.AdminLayoutTemplate))
 	tmpl = template.Must(tmpl.New("meta").Parse(templates.MetaDataTemplate))
 	tmpl = template.Must(tmpl.New("registration").Parse(pageTemplate))
 

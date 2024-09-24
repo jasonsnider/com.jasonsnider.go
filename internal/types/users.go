@@ -8,6 +8,13 @@ type User struct {
 	Role      string `json:"role" validate:"required,oneof=admin user"`
 }
 
+type CreateUser struct {
+	FirstName string `json:"first_name" validate:"required"`
+	LastName  string `json:"last_name" validate:"required"`
+	Email     string `json:"email" validate:"required,email,uniqueEmail"`
+	Role      string `json:"role" validate:"required,oneof=admin user"`
+}
+
 type RegisterUser struct {
 	ID              string `db:"id"`
 	FirstName       string `json:"first_name" validate:"required"`

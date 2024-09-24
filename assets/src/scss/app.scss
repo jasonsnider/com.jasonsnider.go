@@ -178,6 +178,9 @@ option {
     color: #dc3545;
 }
 
+.error *:nth-child(3) {
+    margin-top: .5rem;}
+
 label {
     display: block;
     font-size: 1rem;
