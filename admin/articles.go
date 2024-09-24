@@ -229,7 +229,7 @@ func (app *App) UpdateArticle(w http.ResponseWriter, r *http.Request) {
 			</div>
 			<div>
 				<label for="body">Article</label>
-				<textarea id="Body" name="body">{{.Article.Body}}</textarea>
+				<textarea id="Body" name="body" rows="40">{{.Article.Body}}</textarea>
 			</div>
 			<div>
 				<label for="description">Description</label>
@@ -249,7 +249,7 @@ func (app *App) UpdateArticle(w http.ResponseWriter, r *http.Request) {
 	tmpl = template.Must(tmpl.New("article").Parse(pageTemplate))
 
 	pageData := ArticleUpdateTemplate{
-		Title:            "Register your account",
+		Title:            "Update Article",
 		Description:      "Register your account",
 		Keywords:         "resgistration",
 		Body:             pageTemplate,

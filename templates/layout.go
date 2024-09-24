@@ -127,7 +127,7 @@ const AdminLayoutTemplate = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    {{template "meta" .}}
+    <title>{{.Title}}</title>
 	<base href="/">
 	<link rel="stylesheet" href="/fonts/fonts.css?{{.BustCssCache}}">
 	<link rel="stylesheet" href="/fontawesome/css/all.min.css">
