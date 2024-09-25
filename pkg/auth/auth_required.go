@@ -3,6 +3,8 @@ package auth
 import (
 	"log"
 	"net/http"
+	"os"
+	"strconv"
 
 	"github.com/boj/redistore"
 )
@@ -22,9 +24,6 @@ func (m *AuthMiddleware) AuthRequired(next http.Handler) http.Handler {
 
 		// Log session values to debug
 		authenticated, ok := session.Values["authenticated"].(bool)
-		userEmail, emailExists := session.Values["user_email"].(string)
-
-		log.Printf("AuthRequired Middleware: authenticated=%v, userEmail=%v", authenticated, userEmail)
 
 		if !ok || !authenticated {
 			log.Println("User is not authenticated. Redirecting to login.")
@@ -32,8 +31,17 @@ func (m *AuthMiddleware) AuthRequired(next http.Handler) http.Handler {
 			return
 		}
 
-		// Reset session expiration (20 minutes of inactivity)
-		session.Options.MaxAge = 30 // 20 minutes in seconds
+		sessionExpiryStr := os.Getenv("SESSION_EXPIRY")
+		sessionExpiry, err := strconv.Atoi(sessionExpiryStr)
+
+		if err != nil {
+			log.Printf("Invalid session expiry value: %v", err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+
+		// Reset session expiration
+		session.Options.MaxAge = sessionExpiry
 
 		// Save the session to update the expiration time
 		err = session.Save(r, w)
@@ -42,11 +50,6 @@ func (m *AuthMiddleware) AuthRequired(next http.Handler) http.Handler {
 			http.Redirect(w, r, "/admin/login", http.StatusSeeOther)
 			return
 		}
-
-		if emailExists {
-			log.Printf("Authenticated user: %s", userEmail)
-		}
-
 		next.ServeHTTP(w, r)
 	})
 }

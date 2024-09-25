@@ -70,6 +70,7 @@ func (app *App) Authenticate(w http.ResponseWriter, r *http.Request) {
 
 					sessionExpiryStr := os.Getenv("SESSION_EXPIRY")
 					sessionExpiry, err := strconv.Atoi(sessionExpiryStr)
+					log.Printf("Session expiry: %d", sessionExpiry)
 					if err != nil {
 						log.Printf("Invalid session expiry value: %v", err)
 						http.Error(w, "Internal Server Error", http.StatusInternalServerError)
