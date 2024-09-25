@@ -41,6 +41,7 @@ func AdminRouter(dbpool *pgxpool.Pool) *mux.Router {
 
 	router.HandleFunc("/admin/login", app.Authenticate).Methods("GET")
 	router.HandleFunc("/admin/login", app.Authenticate).Methods("POST")
+	router.HandleFunc("/admin/logout", app.Logout).Methods("GET")
 
 	router.HandleFunc("/admin/register", app.RegisterUser).Methods("GET")
 	router.HandleFunc("/admin/register", app.RegisterUser).Methods("POST")

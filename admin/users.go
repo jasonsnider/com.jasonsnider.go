@@ -133,7 +133,6 @@ func (app *App) CreateUser(w http.ResponseWriter, r *http.Request) {
 	`
 
 	tmpl := template.Must(template.New("layout").Parse(templates.AdminLayoutTemplate))
-	tmpl = template.Must(tmpl.New("meta").Parse(templates.MetaDataTemplate))
 	tmpl = template.Must(tmpl.New("create_user").Parse(pageTemplate))
 
 	pageData := UserUpdateTemplate{
@@ -184,7 +183,6 @@ func (app *App) ListUsers(w http.ResponseWriter, r *http.Request) {
         {{end}}
     `
 	tmpl := template.Must(template.New("layout").Parse(templates.AdminLayoutTemplate))
-	tmpl = template.Must(tmpl.New("meta").Parse(templates.MetaDataTemplate))
 	tmpl = template.Must(tmpl.New("content").Parse(articlesTemplate))
 
 	pageData := UsersPageData{
@@ -230,7 +228,6 @@ func (app *App) ViewUser(w http.ResponseWriter, r *http.Request) {
 	`
 
 	tmpl := template.Must(template.New("layout").Parse(templates.AdminLayoutTemplate))
-	tmpl = template.Must(tmpl.New("meta").Parse(templates.MetaDataTemplate))
 	tmpl = template.Must(tmpl.New("update_user").Parse(pageTemplate))
 
 	pageData := UserUpdateTemplate{
@@ -366,7 +363,6 @@ func (app *App) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	`
 
 	tmpl := template.Must(template.New("layout").Parse(templates.AdminLayoutTemplate))
-	tmpl = template.Must(tmpl.New("meta").Parse(templates.MetaDataTemplate))
 	tmpl = template.Must(tmpl.New("update_user").Parse(pageTemplate))
 
 	pageData := UserUpdateTemplate{

@@ -87,23 +87,21 @@ function buildHomeCSS(){
 }
 
 
-function buildAppCSS(){
+function buildAdminCSS(){
 
   var full = gulp.src([
-    'assets/src/scss/app.scss',
-    'assets/src/scss/navbar.scss'
+    'assets/src/scss/admin.scss'
   ])
   . pipe(scss())
-  . pipe(concat('app.min.css'))
+  . pipe(concat('admin.min.css'))
   . pipe(gulp.dest('static/dist/css'));
 
   var min = gulp.src([
-    'assets/src/scss/app.scss',
-    'assets/src/scss/navbar.scss'
+    'assets/src/scss/admin.scss'
   ])
   . pipe(scss())
   . pipe(cleanCSS())
-  . pipe(concat('app.min.css'))
+  . pipe(concat('admin.min.css'))
   . pipe(gulp.dest('static/dist/css'));
 
   setVersion('css');
@@ -169,19 +167,19 @@ function buildHashJS(){
   return merge(hash);
 }
 
-function buildAppJS() {
+function buildAdminJS() {
 
   var full = gulp.src([
-    'assets/src/js/app.js'
+    'assets/src/js/admin.js'
   ])
-  .pipe(concat('app.js'))
+  .pipe(concat('admin.js'))
   .pipe(uglify())
   .pipe(gulp.dest('static/dist/js'));
 
   var min = gulp.src([
-    'assets/src/js/app.js'
+    'assets/src/js/admin.js'
   ])
-  .pipe(concat('app.min.js'))
+  .pipe(concat('admin.min.js'))
   .pipe(uglify())
   .pipe(gulp.dest('static/dist/js'));
 
@@ -189,58 +187,17 @@ function buildAppJS() {
   return merge(full, min);
 }
 
-
-function buildAuthAppJS() {
-
-  var full = gulp.src([
-    'assets/src/js/app.auth.js'
-  ])
-  .pipe(concat('app.auth.js'))
-  .pipe(uglify())
-  .pipe(gulp.dest('static/dist/js'));
-
-  var min = gulp.src([
-    'assets/src/js/app.auth.js'
-  ])
-  .pipe(concat('app.auth.min.js'))
-  .pipe(uglify())
-  .pipe(gulp.dest('static/dist/js'));
-
-  setVersion('js');
-  return merge(full, min);
-}
-
-function buildCmsAppJS() {
-
-  var full = gulp.src([
-    'assets/src/js/app.cms.js'
-  ])
-  .pipe(concat('app.cms.js'))
-  .pipe(gulp.dest('static/dist/js'));
-
-  var min = gulp.src([
-    'assets/src/js/app.cms.js'
-  ])
-  .pipe(concat('app.cms.min.js'))
-  .pipe(uglify())
-  .pipe(gulp.dest('static/dist/js'));
-
-  setVersion('js');
-  return merge(full, min);
-}
 
 function watchFiles() {
   gulp.watch(['./assets/src/scss/main.scss', './assets/src/scss/navbar.scss'], buildMainCSS);
   gulp.watch(['./assets/src/scss/main.scss', './assets/src/scss/navbar.scss', './assets/src/scss/home-page.scss'], buildHomeCSS);
-  gulp.watch(['./assets/src/scss/app.scss', './assets/src/scss/navbar.scss'], buildAppCSS);
+  gulp.watch(['./assets/src/scss/admin.scss', './assets/src/scss/navbar.scss'], buildAdminCSS);
   gulp.watch(['./assets/src/js/main.js', './assets/src/js/home.js'], buildHomeJS);
   gulp.watch(['./assets/src/js/main.js', './assets/src/js/article.js'], buildArticleJS);
-  gulp.watch('./assets/src/js/app.auth.js', buildAuthAppJS);
-  gulp.watch('./assets/src/js/app.js', buildAppJS);
-  gulp.watch('./assets/src/js/app.cms.js', buildCmsAppJS);
+  gulp.watch('./assets/src/js/admin.js', buildAdminJS);
 }
 
-gulp.task('build-app-css', buildAppCSS);
+gulp.task('build-admin-css', buildAdminCSS);
 
 gulp.task('build-main-css', buildMainCSS); 
 
@@ -250,11 +207,7 @@ gulp.task('build-home-js', buildHomeJS);
 
 gulp.task('build-article-js', buildArticleJS);
 
-gulp.task('build-app-js', buildAppJS);
-
-gulp.task('build-auth-app-js', buildAuthAppJS);
-
-gulp.task('build-cms-app-js', buildCmsAppJS);
+gulp.task('build-admin-js', buildAdminJS);
 
 gulp.task('build-hash-js', buildHashJS);
 

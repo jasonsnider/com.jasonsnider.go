@@ -87,33 +87,30 @@ a:active
     @extend .container;
 }
 
-footer {
-    background: #000;
-    color: #fff;
-    height: 100px;
-    padding: 1rem;
-}
-
-
 main {
     flex: 300px 0 calc(100% - 300px);
     width: 960px;
     max-width: 100%;
     margin: 0 0;
     padding: 0 1rem 1rem;
-    min-height: calc(100vh - 100px);
+    min-height: 100vh;
 }
 
 aside {
     flex: 40px 0 0;
     padding: 1rem;
     background: #ccc;
+    display: flex;
+    flex-direction: column;
 
     ul {
         list-style: none;
         padding: 0;
         margin: 0;
         line-height: 3rem;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
 
         li{
             a:link,
@@ -127,6 +124,10 @@ aside {
                 font-size: xx-large;
             }
         }
+    }
+
+    li:last-child {
+        margin-top: auto;
     }
 }
 

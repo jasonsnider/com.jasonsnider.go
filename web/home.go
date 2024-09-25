@@ -67,8 +67,12 @@ func (app *App) Home(w http.ResponseWriter, r *http.Request) {
 	{{end}}
     `
 
+	funcMap := template.FuncMap{
+		"safeValue": types.SafeValue,
+	}
+
 	tmpl := template.Must(template.New("layout").Parse(templates.HomePageTemplate))
-	tmpl = template.Must(tmpl.New("meta").Parse(templates.MetaDataTemplate))
+	tmpl = template.Must(tmpl.New("meta").Funcs(funcMap).Parse(templates.MetaDataTemplate))
 	tmpl = template.Must(tmpl.New("article").Parse(articleTemplate))
 
 	pageData := ArticlePageData{

@@ -127,7 +127,6 @@ func (app *App) CreateArticle(w http.ResponseWriter, r *http.Request) {
 	`
 
 	tmpl := template.Must(template.New("layout").Parse(templates.AdminLayoutTemplate))
-	tmpl = template.Must(tmpl.New("meta").Parse(templates.MetaDataTemplate))
 	tmpl = template.Must(tmpl.New("create_user").Parse(pageTemplate))
 
 	pageData := ArticleUpdateTemplate{
@@ -180,7 +179,6 @@ func (app *App) ListArticles(w http.ResponseWriter, r *http.Request) {
         {{end}}
     `
 	tmpl := template.Must(template.New("layout").Parse(templates.AdminLayoutTemplate))
-	tmpl = template.Must(tmpl.New("meta").Parse(templates.MetaDataTemplate))
 	tmpl = template.Must(tmpl.New("content").Parse(articlesTemplate))
 
 	pageData := ArticlesPageData{
@@ -231,7 +229,6 @@ func (app *App) ViewArticle(w http.ResponseWriter, r *http.Request) {
     `
 
 	tmpl := template.Must(template.New("layout").Funcs(funcMap).Parse(templates.AdminLayoutTemplate))
-	tmpl = template.Must(tmpl.New("meta").Parse(templates.MetaDataTemplate))
 	tmpl = template.Must(tmpl.New("article").Parse(articleTemplate))
 
 	pageData := ArticlePageData{
@@ -378,7 +375,6 @@ func (app *App) UpdateArticle(w http.ResponseWriter, r *http.Request) {
 	`
 
 	tmpl := template.Must(template.New("layout").Parse(templates.AdminLayoutTemplate))
-	tmpl = template.Must(tmpl.New("meta").Parse(templates.MetaDataTemplate))
 	tmpl = template.Must(tmpl.New("article").Parse(pageTemplate))
 
 	pageData := ArticleUpdateTemplate{

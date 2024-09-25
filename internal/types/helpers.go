@@ -2,6 +2,7 @@ package types
 
 import (
 	"database/sql"
+	"fmt"
 	"time"
 )
 
@@ -41,4 +42,30 @@ func ParseSqlNullTime(dateStr string) (sql.NullTime, error) {
 		Time:  parsedTime,
 		Valid: true,
 	}, nil
+}
+
+func SafeValue(value interface{}) string {
+	switch v := value.(type) {
+	case sql.NullString:
+		if v.Valid {
+			return v.String
+		}
+	case sql.NullInt64:
+		if v.Valid {
+			return fmt.Sprintf("%d", v.Int64)
+		}
+	case sql.NullFloat64:
+		if v.Valid {
+			return fmt.Sprintf("%f", v.Float64)
+		}
+	case sql.NullBool:
+		if v.Valid {
+			return fmt.Sprintf("%t", v.Bool)
+		}
+	case sql.NullTime:
+		if v.Valid {
+			return v.Time.Format("2006-01-02 15:04:05") // Custom time format
+		}
+	}
+	return ""
 }

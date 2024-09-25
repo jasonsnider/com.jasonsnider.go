@@ -45,18 +45,22 @@ func (app *App) ListArticles(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	funcMap := template.FuncMap{
+		"safeValue": types.SafeValue,
+	}
+
 	articlesTemplate := `
         {{define "content"}}
             <h1>Articles</h1>
             <div>
                 {{range .Articles}}
                     <h2><a href="/articles/{{.Slug}}">{{.Title}}</a></h2>
-                    <p>{{.Description}}</p>
+                    <p>{{ safeValue .Description}}</p>
                 {{end}}
             </div>
         {{end}}
     `
-	tmpl := template.Must(template.New("layout").Parse(templates.MainLayoutTemplate))
+	tmpl := template.Must(template.New("layout").Funcs(funcMap).Parse(templates.MainLayoutTemplate))
 	tmpl = template.Must(tmpl.New("meta").Parse(templates.MetaDataTemplate))
 	tmpl = template.Must(tmpl.New("content").Parse(articlesTemplate))
 
@@ -89,7 +93,8 @@ func (app *App) ViewArticle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	funcMap := template.FuncMap{
-		"mdToHTML": mdToHTML,
+		"mdToHTML":  mdToHTML,
+		"safeValue": types.SafeValue,
 	}
 
 	articleTemplate := `

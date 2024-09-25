@@ -25,7 +25,7 @@ func (app *App) ListTools(w http.ResponseWriter, r *http.Request) {
 
 	db := db.DB{DB: app.DB}
 
-	meta, err := db.FetchMetaDataBySlug("games")
+	meta, err := db.FetchMetaDataBySlug("tools")
 	if err != nil {
 		http.Error(w, fmt.Sprintf("FetchArticlesBySlug failed: %v", err), http.StatusInternalServerError)
 		return
@@ -38,18 +38,22 @@ func (app *App) ListTools(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	funcMap := template.FuncMap{
+		"safeValue": types.SafeValue,
+	}
+
 	articlesTemplate := `
         {{define "content"}}
             <h1>Tools</h1>
             <div>
                 {{range .Articles}}
                     <h2><a href="/tools/{{.Slug}}">{{.Title}}</a></h2>
-                    <p>{{.Description}}</p>
+                    <p>{{safeValue .Description}}</p>
                 {{end}}
             </div>
         {{end}}
     `
-	tmpl := template.Must(template.New("layout").Parse(templates.MainLayoutTemplate))
+	tmpl := template.Must(template.New("layout").Funcs(funcMap).Parse(templates.MainLayoutTemplate))
 	tmpl = template.Must(tmpl.New("meta").Parse(templates.MetaDataTemplate))
 	tmpl = template.Must(tmpl.New("content").Parse(articlesTemplate))
 
@@ -114,16 +118,20 @@ func (app *App) ViewTool(w http.ResponseWriter, r *http.Request) {
 	body := mdToHTML(article.Body.String) + template.HTML(selectedTool)
 
 	articleTemplate := `
-	{{define "content"}}
-		<h1>{{.Title}}</h1>
-		<div>
-			{{.Body}}
-		</div>
-	{{end}}
-`
+		{{define "content"}}
+			<h1>{{.Title}}</h1>
+			<div>
+				{{.Body}}
+			</div>
+		{{end}}
+	`
+
+	funcMap = template.FuncMap{
+		"safeValue": types.SafeValue,
+	}
 
 	tmpl := template.Must(template.New("layout").Funcs(funcMap).Parse(templates.MainLayoutTemplate))
-	tmpl = template.Must(tmpl.New("meta").Parse(templates.MetaDataTemplate))
+	tmpl = template.Must(tmpl.New("meta").Funcs(funcMap).Parse(templates.MetaDataTemplate))
 	tmpl = template.Must(tmpl.New("article").Parse(articleTemplate))
 
 	pageData := ToolPageData{

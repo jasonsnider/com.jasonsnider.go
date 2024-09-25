@@ -5,6 +5,8 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"os"
+	"strconv"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/jasonsnider/com.jasonsnider.go/internal/db"
@@ -66,10 +68,20 @@ func (app *App) Authenticate(w http.ResponseWriter, r *http.Request) {
 				confirm := passwords.CheckPasswordHash(auth.Password, user.Hash)
 				if confirm {
 
+					sessionExpiryStr := os.Getenv("SESSION_EXPIRY")
+					sessionExpiry, err := strconv.Atoi(sessionExpiryStr)
+					if err != nil {
+						log.Printf("Invalid session expiry value: %v", err)
+						http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+						return
+					}
+
 					session, _ := app.SessionStore.Get(r, "com-jasonsnider-go")
 					session.Values["authenticated"] = true
 					session.Values["user_email"] = user.Email
-					err := session.Save(r, w)
+					session.Options.MaxAge = sessionExpiry
+					err = session.Save(r, w)
+
 					if err != nil {
 						log.Printf("Failed to save session: %v", err)
 					} else {
@@ -113,8 +125,12 @@ func (app *App) Authenticate(w http.ResponseWriter, r *http.Request) {
 	{{end}}
 	`
 
+	funcMap := template.FuncMap{
+		"safeValue": types.SafeValue,
+	}
+
 	tmpl := template.Must(template.New("layout").Parse(templates.MainLayoutTemplate))
-	tmpl = template.Must(tmpl.New("meta").Parse(templates.MetaDataTemplate))
+	tmpl = template.Must(tmpl.New("meta").Funcs(funcMap).Parse(templates.MetaDataTemplate))
 	tmpl = template.Must(tmpl.New("registration").Parse(pageTemplate))
 
 	pageData := AuthTemplate{
@@ -132,4 +148,27 @@ func (app *App) Authenticate(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Template execution failed: %v", err), http.StatusInternalServerError)
 	}
+}
+
+func (app *App) Logout(w http.ResponseWriter, r *http.Request) {
+
+	session, err := app.SessionStore.Get(r, "com-jasonsnider-go")
+	if err != nil {
+		log.Printf("Failed to get session: %v", err)
+		http.Error(w, "Failed to get session", http.StatusInternalServerError)
+		return
+	}
+
+	// This tells Redis to delete the session
+	session.Options.MaxAge = -1
+
+	err = session.Save(r, w)
+	if err != nil {
+		log.Printf("Failed to delete session during logout: %v", err)
+		http.Error(w, "Failed to log out", http.StatusInternalServerError)
+		return
+	}
+
+	log.Println("User logged out successfully and session deleted")
+	http.Redirect(w, r, "/admin/login", http.StatusSeeOther)
 }

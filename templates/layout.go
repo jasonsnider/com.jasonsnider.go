@@ -11,8 +11,8 @@ type MetaData struct {
 const MetaDataTemplate = `
 {{define "meta"}}
     <title>{{.Title}}</title>
-    <meta name="description" content="{{.Description}}">
-	<meta name="keywords" content="{{.Keywords}}">
+    <meta name="description" content="{{safeValue .Description}}">
+	<meta name="keywords" content="{{safeValue .Keywords}}">
 {{end}}
 `
 
@@ -23,7 +23,7 @@ const MainLayoutTemplate = `
     {{template "meta" .}}
 	<base href="/">
 	<link rel="stylesheet" href="/fonts/fonts.css?{{.BustCssCache}}">
-	<link rel="stylesheet" href="/fontawesome/css/all.min.css">
+	<link rel="stylesheet" href="/fontawesome/css/all.min.css?{{.BustCssCache}}">
 	<link rel="stylesheet" href="/dist/css/main.min.css?{{.BustCssCache}}">
 	<link rel="stylesheet" href="/highlight/styles/atom-one-dark.css">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -75,7 +75,7 @@ const HomePageTemplate = `
     {{template "meta" .}}
 	<base href="/">
 	<link rel="stylesheet" href="/fonts/fonts.css?{{.BustCssCache}}">
-	<link rel="stylesheet" href="/fontawesome/css/all.min.css">
+	<link rel="stylesheet" href="/fontawesome/css/all.min.css?{{.BustCssCache}}">
 	<link rel="stylesheet" href="/dist/css/home-page.min.css?{{.BustCssCache}}">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -132,32 +132,33 @@ const AdminLayoutTemplate = `
     <title>{{.Title}}</title>
 	<base href="/">
 	<link rel="stylesheet" href="/fonts/fonts.css?{{.BustCssCache}}">
-	<link rel="stylesheet" href="/fontawesome/css/all.min.css">
-	<link rel="stylesheet" href="/dist/css/app.min.css?{{.BustCssCache}}">
+	<link rel="stylesheet" href="/fontawesome/css/all.min.css?{{.BustCssCache}}">
+	<link rel="stylesheet" href="/dist/css/admin.min.css?{{.BustCssCache}}">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
 
 	<div class="wrapper">
 
-	<aside>
-		<ul>
-			<li><a href="/admin/dashboard"><i class="fas fa-home"></i></a></li>
-			<li><a href="/admin/users"><i class="fas fa-user"></i></a></li>
-			<li><a href="/admin/articles"><i class="fas fa-newspaper"></i></a></li>
-		</ul>
-	</aside>
+		<aside>
+			<ul>
+				<li><a href="/admin/dashboard"><i class="fas fa-home"></i></a></li>
+				<li><a href="/admin/users"><i class="fas fa-user"></i></a></li>
+				<li><a href="/admin/articles"><i class="fas fa-newspaper"></i></a></li>
+				<li>
+					<ul>
+						<li><a href="/admin/logout"><i class="fas fa-sign-out"></i></a></li>
+					</ul>
+				</li>
+			</li>
+		</aside>
 
-	<main>
-		{{template "content" .}}
-	</main>
+		<main>
+			{{template "content" .}}
+		</main>
 
 	</div>
-
-	<footer>
-		<div class="container">&copy; 2007-2024 jasonsnider.com</div>
-	</footer>
-	<script src="/dist/js/app.min.js?{{.BustJsCache}}"></script>
+	<script src="/dist/js/admin.min.js?{{.BustJsCache}}"></script>
 </body>
 </html>
 `
