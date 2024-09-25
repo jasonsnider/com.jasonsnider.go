@@ -54,6 +54,7 @@ services:
     command: sh -c "gulp"
     depends_on:
       - goapp
+    restart: on-failure
 
 volumes:
   postgres-data:
