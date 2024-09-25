@@ -17,7 +17,7 @@ func (db *DB) RegisterUser(user types.RegisterUser) error {
 	userID := uuid.New()
 	hash, _ := passwords.HashPassword(user.Password)
 
-	sql := "INSERT INTO users (id, first_name, last_name, email, hash) VALUES ($1, $2, $3, $4, $5, $6)"
+	sql := "INSERT INTO users (id, first_name, last_name, email, hash) VALUES ($1, $2, $3, $4, $5)"
 	_, err := db.DB.Exec(context.Background(), sql, userID, user.FirstName, user.LastName, user.Email, hash)
 	if err != nil {
 		return fmt.Errorf("query failed: %v", err)
@@ -75,32 +75,43 @@ func (db *DB) FetchUserById(id string) (types.User, error) {
 	return user, nil
 }
 
+func (db *DB) DeleteUser(id string) error {
+	sql := "DELETE FROM users WHERE id=$1"
+	_, err := db.DB.Exec(context.Background(), sql, id)
+	if err != nil {
+		return fmt.Errorf("query failed: %v", err)
+	}
+
+	return nil
+}
+
+// fetchEmail is a helper function that queries the database for an email by a given column and value.
+func (db *DB) fetchEmail(column, value string) (string, error) {
+	var email string
+	query := fmt.Sprintf("SELECT email FROM users WHERE %s=$1", column)
+	err := db.DB.QueryRow(context.Background(), query, value).Scan(&email)
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return "", nil // No rows means no email, return empty string and no error
+		}
+		return "", err // Return other errors to be handled by the caller
+	}
+	return email, nil
+}
+
 // EmailExistsInDatabase checks if an email exists in the database
 func (db *DB) EmailExistsInDatabase(email string) bool {
-	var foundEmail string
-	sql := "SELECT email FROM users WHERE email=$1"
-
-	err := db.DB.QueryRow(context.Background(), sql, email).Scan(&foundEmail)
-
-	if err == pgx.ErrNoRows {
-		return false
-	} else if err != nil {
-		log.Printf("Error querying database: %v", err)
+	foundEmail, err := db.fetchEmail("email", email)
+	if err != nil {
+		log.Printf("Error querying database for email: %v", err)
 		return false
 	}
-	return true
+	return foundEmail != ""
 }
 
 // GetExistingEmail fetches the existing email for a given user ID
 func (db *DB) GetExistingEmail(userID string) (string, error) {
-	var existingEmail string
-	sql := "SELECT email FROM users WHERE id=$1"
-
-	err := db.DB.QueryRow(context.Background(), sql, userID).Scan(&existingEmail)
-	if err != nil {
-		return "", err
-	}
-	return existingEmail, nil
+	return db.fetchEmail("id", userID)
 }
 
 // UniqueEmail is a custom validation function for unique email
@@ -108,15 +119,18 @@ func (db *DB) UniqueEmail(fl validator.FieldLevel) bool {
 	email := fl.Field().String()
 	userID := fl.Parent().FieldByName("ID").String()
 
-	// Only check for uniqueness if the email has changed
-	existingEmail, err := db.GetExistingEmail(userID)
-	if err != nil {
-		log.Printf("Error fetching existing email: %v", err)
-		return false
+	// If userID is provided, check if the email has changed
+	if userID != "" {
+		existingEmail, err := db.GetExistingEmail(userID)
+		if err != nil {
+			log.Printf("Error fetching existing email: %v", err)
+			return false
+		}
+		if email == existingEmail {
+			return true // Email is unchanged
+		}
 	}
 
-	if email != existingEmail {
-		return !db.EmailExistsInDatabase(email)
-	}
-	return true
+	// Check if the email exists in the database
+	return !db.EmailExistsInDatabase(email)
 }

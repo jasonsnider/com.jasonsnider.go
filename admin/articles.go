@@ -25,6 +25,7 @@ type ArticlesPageData struct {
 }
 
 type ArticlePageData struct {
+	ID           string
 	Title        string
 	Description  string
 	Keywords     string
@@ -55,7 +56,7 @@ func (app *App) CreateArticle(w http.ResponseWriter, r *http.Request) {
 func (app *App) ListArticles(w http.ResponseWriter, r *http.Request) {
 
 	db := db.DB{DB: app.DB}
-	articles, err := db.FetchArticlesByType("post")
+	articles, err := db.FetchArticles()
 
 	if err != nil {
 		http.Error(w, fmt.Sprintf("FetchArticlesByType failed: %v", err), http.StatusInternalServerError)
@@ -64,13 +65,19 @@ func (app *App) ListArticles(w http.ResponseWriter, r *http.Request) {
 
 	articlesTemplate := `
         {{define "content"}}
-            <h1>Articles</h1>
-			<div class="menu">
-				<a href="/admin/articles/create">Create</a>
-			</div>
+            
+			<header class="row">
+				<h1 class="col">Articles</h1>
+				<div class="col-end">
+					<a class="btn" href="/admin/articles/create">Create</a>
+				</div>
+			</header>
+
 			{{range .Articles}}
 				<div class="row rotate">
-					<div class="col"><a href="/admin/articles/{{.ID}}">{{.Title}}</a></div>
+					<div class="col-4"><a href="/admin/articles/{{.ID}}">{{.Title}}</a></div>
+					<div class="col">{{.Type}}</div>
+					<div class="col">{{.Format}}</div>
 					<div class="col-end">
 						<a href="/admin/articles/{{.ID}}"><i class="fas fa-eye"></i></a>
 						<a href="/admin/articles/{{.ID}}/edit"><i class="fas fa-edit"></i></a>
@@ -118,7 +125,13 @@ func (app *App) ViewArticle(w http.ResponseWriter, r *http.Request) {
 
 	articleTemplate := `
 		{{define "content"}}
-			<h1>{{.Title}}</h1>
+			<header class="row">
+				<h1 class="col">{{.Title}}</h1>
+				<div class="col-end">
+					<a class="btn" href="/admin/articles/{{.ID}}/edit">Edit</a>
+					<a class="btn" href="/admin/articles/{{.ID}}/delete">Delete</a>
+				</div>
+			</header>
 			<div>
 				{{mdToHTML .Body}}
 			</div>
@@ -130,6 +143,7 @@ func (app *App) ViewArticle(w http.ResponseWriter, r *http.Request) {
 	tmpl = template.Must(tmpl.New("article").Parse(articleTemplate))
 
 	pageData := ArticlePageData{
+		ID:           article.ID,
 		Title:        article.Title,
 		Description:  article.Description,
 		Keywords:     article.Keywords,
@@ -214,7 +228,13 @@ func (app *App) UpdateArticle(w http.ResponseWriter, r *http.Request) {
 
 	pageTemplate := `
 	{{define "content"}}
-		<h1>Edit</h1>
+		<header class="row">
+			<h1 class="col">{{.Title}}</h1>
+			<div class="col-end">
+				<a class="btn" href="/admin/articles/{{.Article.ID}}">View</a>
+				<a class="btn" href="/admin/articles/{{.Article.ID}}/delete">Delete</a>
+			</div>
+		</header>
 		<form action="/admin/articles/{{.Article.ID}}/edit" method="POST">
 			<input type="hidden" name="id" value="{{.Article.ID}}">
 			<div class="{{if index .ValidationErrors "Title"}}error{{end}}">
@@ -266,5 +286,16 @@ func (app *App) UpdateArticle(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *App) DeleteArticle(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Delete Article")
+	db := db.DB{DB: app.DB}
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	err := db.DeleteArticle(id)
+
+	if err != nil {
+		http.Error(w, fmt.Sprintf("DeleteArticleByID failed: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(w, r, "/admin/articles", http.StatusSeeOther)
 }

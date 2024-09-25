@@ -1,11 +1,9 @@
-document.getElementById('ShowMainNav').addEventListener('click',function(){
+document.querySelectorAll("a[href$='/delete']").forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
 
-    var nav = document.querySelector('nav#MainNav ul');
-  
-    if (nav.style.display === "block") {
-        nav.style.display = "none";
-    } else {
-        nav.style.display = "block";
-    }
-  
-  });
+        if (confirm('Are you sure you want to delete this item?')) {
+            window.location.href = this.getAttribute('href');
+        }
+    });
+});

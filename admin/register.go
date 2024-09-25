@@ -9,6 +9,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/jasonsnider/com.jasonsnider.go/internal/db"
 	"github.com/jasonsnider/com.jasonsnider.go/internal/types"
+	"github.com/jasonsnider/com.jasonsnider.go/pkg/inflection"
 	"github.com/jasonsnider/com.jasonsnider.go/templates"
 )
 
@@ -20,6 +21,7 @@ func (app *App) RegisterUser(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == "POST" {
 		validate := validator.New()
+		validate.RegisterValidation("uniqueEmail", db.UniqueEmail)
 
 		user = types.RegisterUser{
 			FirstName:       r.FormValue("first_name"),
@@ -34,20 +36,23 @@ func (app *App) RegisterUser(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			for _, err := range err.(validator.ValidationErrors) {
 				fieldName := err.Field()
+				fieldNameHuman := inflection.Humanize(fieldName)
 				tag := err.Tag()
 
 				var errorMessage string
 				switch tag {
 				case "required":
-					errorMessage = fmt.Sprintf("%s is required", fieldName)
+					errorMessage = fmt.Sprintf("%s is required", fieldNameHuman)
 				case "email":
-					errorMessage = fmt.Sprintf("%s must be a valid email address", fieldName)
+					errorMessage = fmt.Sprintf("%s must be a valid email address", fieldNameHuman)
+				case "uniqueEmail":
+					errorMessage = fmt.Sprintf("%s is already in use", fieldNameHuman)
 				case "min":
-					errorMessage = fmt.Sprintf("%s must be at least %s characters long", fieldName, err.Param())
+					errorMessage = fmt.Sprintf("%s must be at least %s characters long", fieldNameHuman, err.Param())
 				case "eqfield":
-					errorMessage = fmt.Sprintf("%s must match %s", fieldName, err.Param())
+					errorMessage = fmt.Sprintf("%s must match %s", fieldNameHuman, err.Param())
 				default:
-					errorMessage = fmt.Sprintf("%s is invalid", fieldName)
+					errorMessage = fmt.Sprintf("%s is invalid", fieldNameHuman)
 				}
 
 				validationErrors[fieldName] = errorMessage
@@ -66,7 +71,7 @@ func (app *App) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	pageTemplate := `
 	{{define "content"}}
 		<h1>Register</h1>
-		<form action="/admin/register" method="POST">
+		<form action="/admin/register" method="POST" novalidate>
 			<div class="{{if index .ValidationErrors "FirstName"}}error{{end}}">
 				<label for="first_name">First Name</label>
 				<input type="text" id="FirstName" name="first_name" value="{{.User.FirstName}}">

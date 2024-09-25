@@ -7,6 +7,31 @@ import (
 	"github.com/jasonsnider/com.jasonsnider.go/internal/types"
 )
 
+func (db *DB) FetchArticles() ([]types.Article, error) {
+	sql := "SELECT id, slug, title, description, keywords, body, type, format, published FROM articles"
+	rows, err := db.DB.Query(context.Background(), sql)
+	if err != nil {
+		return nil, fmt.Errorf("query failed: %v", err)
+	}
+	defer rows.Close()
+
+	var articles []types.Article
+	for rows.Next() {
+		var article types.Article
+		err := rows.Scan(&article.ID, &article.Slug, &article.Title, &article.Description, &article.Keywords, &article.Body, &article.Type, &article.Format, &article.Published)
+		if err != nil {
+			return nil, fmt.Errorf("row scan failed: %v", err)
+		}
+		articles = append(articles, article)
+	}
+
+	if rows.Err() != nil {
+		return nil, fmt.Errorf("rows iteration failed: %v", rows.Err())
+	}
+
+	return articles, nil
+}
+
 func (db *DB) FetchArticlesByType(articleType string) ([]types.Article, error) {
 	sql := "SELECT id, slug, title, description, keywords, body FROM articles WHERE type=$1"
 	rows, err := db.DB.Query(context.Background(), sql, articleType)
@@ -62,4 +87,14 @@ func (db *DB) FetchMetaDataBySlug(slug string) (types.Article, error) {
 	}
 
 	return article, nil
+}
+
+func (db *DB) DeleteArticle(id string) error {
+	sql := "DELETE FROM articles WHERE id=$1"
+	_, err := db.DB.Exec(context.Background(), sql, id)
+	if err != nil {
+		return fmt.Errorf("query failed: %v", err)
+	}
+
+	return nil
 }

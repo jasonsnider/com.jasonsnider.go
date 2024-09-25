@@ -1,1 +1,1 @@
-document.getElementById("ShowMainNav").addEventListener("click",(function(){var e=document.querySelector("nav#MainNav ul");"block"===e.style.display?e.style.display="none":e.style.display="block"}));
+document.querySelectorAll("a[href$='/delete']").forEach(e=>{e.addEventListener("click",(function(e){e.preventDefault(),confirm("Are you sure you want to delete this item?")&&(window.location.href=this.getAttribute("href"))}))});

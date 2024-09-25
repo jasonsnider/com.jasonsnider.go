@@ -70,6 +70,8 @@ func (app *App) CreateUser(w http.ResponseWriter, r *http.Request) {
 					errorMessage = fmt.Sprintf("%s is required", fieldNameHuman)
 				case "email":
 					errorMessage = fmt.Sprintf("%s must be a valid email address", fieldNameHuman)
+				case "uniqueEmail":
+					errorMessage = fmt.Sprintf("%s is already in use", fieldNameHuman)
 				case "min":
 					errorMessage = fmt.Sprintf("%s must be at least %s characters long", fieldNameHuman, err.Param())
 				case "eqfield":
@@ -92,7 +94,14 @@ func (app *App) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	pageTemplate := `
 	{{define "content"}}
-		<h1>Create a User</h1>
+		<header class="row">
+			<h1 class="col">Create a User</h1>
+			<div class="col-end">
+				<a class="btn" href="/admin/users">Create</a>
+			</div>
+		</header>
+
+
 		<form action="/admin/users/create" method="POST" novalidate>
 			<div class="{{if index .ValidationErrors "FirstName"}}error{{end}}">
 				<label for="first_name">First Name</label>
@@ -151,10 +160,13 @@ func (app *App) ListUsers(w http.ResponseWriter, r *http.Request) {
 
 	articlesTemplate := `
         {{define "content"}}
-            <h1>Users</h1>
-			<div class="menu">
-				<a href="/admin/users/create">Create</a>
-			</div>
+			<header class="row">
+				<h1 class="col">Users</h1>
+				<div class="col-end">
+					<a class="btn" href="/admin/users/create">Create</a>
+				</div>
+			</header>
+
 			{{range .Users}}
 				<div class="row rotate">
 					<div class="col"><a href="/users/{{.ID}}">{{.LastName}}, {{.FirstName}}</a></div>
@@ -187,7 +199,51 @@ func (app *App) ListUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *App) ViewUser(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Read User")
+	db := db.DB{DB: app.DB}
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	var user types.User
+	user, err := db.FetchUserById(id)
+
+	if err != nil {
+		http.Error(w, fmt.Sprintf("FetchUserById failed: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	validationErrors := make(map[string]string)
+
+	pageTemplate := `
+	{{define "content"}}
+		<header class="row">
+			<h1>{{.User.LastName}}, {{.User.FirstName}}</h1>
+			<div class="col-end">
+				<a class="btn" href="/admin/users/{{.User.ID}}/edit">Edit</a>
+				<a class="btn" href="/admin/users/{{.User.ID}}/delete">Delete</a>
+			</div>
+		</header>
+		<div>{{.User.Email}}</div>
+		<div>{{.User.Role}}</div>
+	{{end}}
+	`
+
+	tmpl := template.Must(template.New("layout").Parse(templates.AdminLayoutTemplate))
+	tmpl = template.Must(tmpl.New("meta").Parse(templates.MetaDataTemplate))
+	tmpl = template.Must(tmpl.New("update_user").Parse(pageTemplate))
+
+	pageData := UserUpdateTemplate{
+		Title:            user.LastName + ", " + user.FirstName,
+		Body:             pageTemplate,
+		ValidationErrors: validationErrors,
+		User:             user,
+		BustCssCache:     app.BustCssCache,
+		BustJsCache:      app.BustJsCache,
+	}
+
+	err = tmpl.ExecuteTemplate(w, "layout", pageData)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Template execution failed: %v", err), http.StatusInternalServerError)
+	}
 }
 
 func (app *App) UpdateUser(w http.ResponseWriter, r *http.Request) {
@@ -271,7 +327,13 @@ func (app *App) UpdateUser(w http.ResponseWriter, r *http.Request) {
 
 	pageTemplate := `
 	{{define "content"}}
-		<h1>Edit</h1>
+		<header class="row">
+			<h1>{{.User.LastName}}, {{.User.FirstName}}</h1>
+			<div class="col-end">
+				<a class="btn" href="/admin/users/{{.User.ID}}">View</a>
+				<a class="btn" href="/admin/users/{{.User.ID}}/delete">Delete</a>
+			</div>
+		</header>
 		<form action="/admin/users/{{.User.ID}}/edit" method="POST">
 			<input type="hidden" name="id" value="{{.User.ID}}">
 			<div class="{{if index .ValidationErrors "FirstName"}}error{{end}}">
@@ -321,5 +383,16 @@ func (app *App) UpdateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *App) DeleteUser(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Delete User")
+	db := db.DB{DB: app.DB}
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	err := db.DeleteUser(id)
+
+	if err != nil {
+		http.Error(w, fmt.Sprintf("DeleteUser failed: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(w, r, "/admin/users", http.StatusSeeOther)
 }
