@@ -4,11 +4,26 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/google/uuid"
 	"github.com/jasonsnider/com.jasonsnider.go/internal/types"
+	"github.com/jasonsnider/com.jasonsnider.go/pkg/inflection"
 )
 
+func (db *DB) CreateArticle(article types.Article) (string, error) {
+	articleID := uuid.New().String()
+	slug := inflection.Slugify(article.Title)
+
+	sql := "INSERT INTO articles (id, title, slug) VALUES ($1, $2, $3)"
+	_, err := db.DB.Exec(context.Background(), sql, articleID, article.Title, slug)
+	if err != nil {
+		return "", fmt.Errorf("query failed: %v", err)
+	}
+
+	return articleID, nil
+}
+
 func (db *DB) FetchArticles() ([]types.Article, error) {
-	sql := "SELECT id, slug, title, description, keywords, body, type, format, published FROM articles"
+	sql := "SELECT id, slug, title, description, keywords, body, type, format FROM articles"
 	rows, err := db.DB.Query(context.Background(), sql)
 	if err != nil {
 		return nil, fmt.Errorf("query failed: %v", err)
@@ -18,7 +33,7 @@ func (db *DB) FetchArticles() ([]types.Article, error) {
 	var articles []types.Article
 	for rows.Next() {
 		var article types.Article
-		err := rows.Scan(&article.ID, &article.Slug, &article.Title, &article.Description, &article.Keywords, &article.Body, &article.Type, &article.Format, &article.Published)
+		err := rows.Scan(&article.ID, &article.Slug, &article.Title, &article.Description, &article.Keywords, &article.Body, &article.Type, &article.Format)
 		if err != nil {
 			return nil, fmt.Errorf("row scan failed: %v", err)
 		}

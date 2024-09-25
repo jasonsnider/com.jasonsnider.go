@@ -1,15 +1,17 @@
 package types
 
-import "time"
+import (
+	"database/sql"
+)
 
 type Article struct {
-	ID          string     `json:"id"`
-	Slug        string     `json:"slug"`
-	Title       string     `json:"title"`
-	Description string     `json:"description"`
-	Keywords    string     `json:"keywords"`
-	Body        string     `json:"body"`
-	Published   *time.Time `json:"published"`
-	Format      string     `json:"format"`
-	Type        string     `json:"type"`
+	ID          string         `json:"id"`
+	Slug        string         `json:"slug"`
+	Title       string         `json:"title"`
+	Description sql.NullString `json:"description"`
+	Keywords    sql.NullString `json:"keywords"`
+	Body        sql.NullString `json:"body"`
+	Published   sql.NullTime   `json:"published"`
+	Format      sql.NullString `json:"format"`
+	Type        sql.NullString `json:"type"`
 }

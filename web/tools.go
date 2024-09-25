@@ -1,6 +1,7 @@
 package web
 
 import (
+	"database/sql"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -13,8 +14,8 @@ import (
 
 type ToolPageData struct {
 	Title        string
-	Description  string
-	Keywords     string
+	Description  sql.NullString
+	Keywords     sql.NullString
 	Body         template.HTML
 	BustCssCache string
 	BustJsCache  string
@@ -110,7 +111,7 @@ func (app *App) ViewTool(w http.ResponseWriter, r *http.Request) {
 
 	selectedTool := tools[article.Slug]
 
-	body := mdToHTML(article.Body) + template.HTML(selectedTool)
+	body := mdToHTML(article.Body.String) + template.HTML(selectedTool)
 
 	articleTemplate := `
 	{{define "content"}}

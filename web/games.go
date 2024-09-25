@@ -92,7 +92,7 @@ func (app *App) ViewGame(w http.ResponseWriter, r *http.Request) {
 		Title:        article.Title,
 		Description:  article.Description,
 		Keywords:     article.Keywords,
-		Body:         article.Body,
+		Body:         article.Body.String,
 		BustCssCache: app.BustCssCache,
 		BustJsCache:  app.BustJsCache,
 	}

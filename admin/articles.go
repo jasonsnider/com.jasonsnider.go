@@ -2,23 +2,26 @@ package admin
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"html/template"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gomarkdown/markdown"
 	"github.com/gorilla/mux"
 	"github.com/jasonsnider/com.jasonsnider.go/internal/db"
 	"github.com/jasonsnider/com.jasonsnider.go/internal/types"
+	"github.com/jasonsnider/com.jasonsnider.go/pkg/inflection"
 	"github.com/jasonsnider/com.jasonsnider.go/templates"
 )
 
 type ArticlesPageData struct {
 	Title        string
-	Description  string
-	Keywords     string
+	Description  sql.NullString
+	Keywords     sql.NullString
 	Articles     []types.Article
 	BustCssCache string
 	BustJsCache  string
@@ -27,8 +30,8 @@ type ArticlesPageData struct {
 type ArticlePageData struct {
 	ID           string
 	Title        string
-	Description  string
-	Keywords     string
+	Description  sql.NullString
+	Keywords     sql.NullString
 	Body         string
 	BustCssCache string
 	BustJsCache  string
@@ -36,8 +39,8 @@ type ArticlePageData struct {
 
 type ArticleUpdateTemplate struct {
 	Title            string
-	Description      string
-	Keywords         string
+	Description      sql.NullString
+	Keywords         sql.NullString
 	Body             string
 	ValidationErrors map[string]string
 	Article          types.Article
@@ -49,8 +52,97 @@ func mdToHTML(md string) template.HTML {
 	return template.HTML(markdown.ToHTML([]byte(md), nil, nil))
 }
 
+func parseTime(timeStr string) *time.Time {
+	if timeStr == "" {
+		return nil
+	}
+	t, err := time.Parse(time.RFC3339, timeStr)
+	if err != nil {
+		log.Printf("failed to parse time: %v", err)
+		return nil
+	}
+	return &t
+}
+
 func (app *App) CreateArticle(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Create Article")
+	db := db.DB{DB: app.DB}
+	article := types.Article{}
+	validationErrors := make(map[string]string)
+
+	if r.Method == "POST" {
+		validate := validator.New()
+		validate.RegisterValidation("uniqueEmail", db.UniqueEmail)
+
+		article = types.Article{
+			Title: r.FormValue("title"),
+		}
+
+		err := validate.Struct(article)
+
+		if err != nil {
+			for _, err := range err.(validator.ValidationErrors) {
+				fieldName := err.Field()
+				fieldNameHuman := inflection.Humanize(fieldName)
+				tag := err.Tag()
+
+				var errorMessage string
+				switch tag {
+				case "required":
+					errorMessage = fmt.Sprintf("%s is required", fieldNameHuman)
+				default:
+					errorMessage = fmt.Sprintf("%s is invalid", fieldNameHuman)
+				}
+
+				validationErrors[fieldName] = errorMessage
+			}
+		} else {
+			articleID, err := db.CreateArticle(article)
+			if err != nil {
+				log.Fatalf("failed to create article: %v", err)
+			}
+
+			log.Println("Article created successfully")
+			http.Redirect(w, r, "/admin/articles/"+articleID+"/edit", http.StatusSeeOther)
+		}
+	}
+
+	pageTemplate := `
+	{{define "content"}}
+		<header class="row">
+			<h1 class="col">Create an Article</h1>
+			<div class="col-end">
+				<a class="btn" href="/admin/articles">Articles</a>
+			</div>
+		</header>
+
+		<form action="/admin/articles/create" method="POST" novalidate>
+			<div class="{{if index .ValidationErrors "Title"}}error{{end}}">
+				<label for="title">Article</label>
+				<input type="text" id="Title" name="title" value="{{.Article.Title}}">
+				<div>{{if index .ValidationErrors "Title"}}{{index .ValidationErrors "Title"}}{{end}}</div>
+			</div>
+			<button type="submit">Submit</button>
+		</form>
+	{{end}}
+	`
+
+	tmpl := template.Must(template.New("layout").Parse(templates.AdminLayoutTemplate))
+	tmpl = template.Must(tmpl.New("meta").Parse(templates.MetaDataTemplate))
+	tmpl = template.Must(tmpl.New("create_user").Parse(pageTemplate))
+
+	pageData := ArticleUpdateTemplate{
+		Title:            "Create a user",
+		Body:             pageTemplate,
+		ValidationErrors: validationErrors,
+		Article:          article,
+		BustCssCache:     app.BustCssCache,
+		BustJsCache:      app.BustJsCache,
+	}
+
+	err := tmpl.ExecuteTemplate(w, "layout", pageData)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Template execution failed: %v", err), http.StatusInternalServerError)
+	}
 }
 
 func (app *App) ListArticles(w http.ResponseWriter, r *http.Request) {
@@ -93,8 +185,8 @@ func (app *App) ListArticles(w http.ResponseWriter, r *http.Request) {
 
 	pageData := ArticlesPageData{
 		Title:        "Articles",
-		Description:  "A list of articles",
-		Keywords:     "articles, blog",
+		Description:  types.TypeSqlNullString("A list of articles"),
+		Keywords:     types.TypeSqlNullString("articles, blog"),
 		Articles:     articles,
 		BustCssCache: app.BustCssCache,
 		BustJsCache:  app.BustJsCache,
@@ -147,7 +239,7 @@ func (app *App) ViewArticle(w http.ResponseWriter, r *http.Request) {
 		Title:        article.Title,
 		Description:  article.Description,
 		Keywords:     article.Keywords,
-		Body:         article.Body,
+		Body:         article.Body.String,
 		BustCssCache: app.BustCssCache,
 		BustJsCache:  app.BustJsCache,
 	}
@@ -176,11 +268,20 @@ func (app *App) UpdateArticle(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		validate := validator.New()
 
+		publishedTime, _ := types.ParseSqlNullTime(r.FormValue("published"))
+
 		article.ID = r.FormValue("id")
 		article.Title = r.FormValue("title")
-		article.Description = r.FormValue("description")
-		article.Body = r.FormValue("body")
-		article.Keywords = r.FormValue("keywords")
+		article.Slug = r.FormValue("slug")
+		article.Description = types.TypeSqlNullString(r.FormValue("description"))
+		article.Body = types.TypeSqlNullString(r.FormValue("body"))
+		article.Keywords = types.TypeSqlNullString(r.FormValue("keywords"))
+		article.Type = types.TypeSqlNullString(r.FormValue("type"))
+		article.Format = types.TypeSqlNullString(r.FormValue("format"))
+		article.Published = publishedTime
+		// if published := parseTime(r.FormValue("published")); published != nil {
+		// 	article.Published = *published
+		// }
 
 		err := validate.Struct(article)
 
@@ -249,15 +350,27 @@ func (app *App) UpdateArticle(w http.ResponseWriter, r *http.Request) {
 			</div>
 			<div>
 				<label for="body">Article</label>
-				<textarea id="Body" name="body" rows="40">{{.Article.Body}}</textarea>
+				<textarea id="Body" name="body" rows="40">{{if .Article.Published.Valid}}{{.Article.Body}}{{end}}</textarea>
 			</div>
 			<div>
 				<label for="description">Description</label>
-				<textarea id="Description" name="description">{{.Article.Description}}</textarea>
+				<textarea id="Description" name="description">{{if .Article.Published.Valid}}{{.Article.Description}}{{end}}</textarea>
 			</div>
 			<div>
 				<label for="keywords">Keywords</label>
-				<textarea id="Keywords" name="keywords">{{.Article.Keywords}}</textarea>
+				<textarea id="Keywords" name="keywords">{{if .Article.Published.Valid}}{{.Article.Keywords}}{{end}}</textarea>
+			</div>
+			<div>
+				<label for="type">Type</label>
+				<input type="text" id="Type" name="type" value="{{if .Article.Type.Valid}}{{.Article.Type}}{{end}}">
+			</div>
+			<div>
+				<label for="format">Format</label>
+				<input type="text" id="Format" name="format" value="{{if .Article.Format.Valid}}{{.Article.Format}}{{end}}">
+			</div>
+			<div>
+				<label for="published">Published</label>
+				<input type="text" id="Published" name="published" value="{{if .Article.Published.Valid}}{{.Article.Published}}{{end}}">
 			</div>
 			<button type="submit">Submit</button>
 		</form>
@@ -270,8 +383,8 @@ func (app *App) UpdateArticle(w http.ResponseWriter, r *http.Request) {
 
 	pageData := ArticleUpdateTemplate{
 		Title:            "Update Article",
-		Description:      "Register your account",
-		Keywords:         "resgistration",
+		Description:      types.TypeSqlNullString("Register your account"),
+		Keywords:         types.TypeSqlNullString("resgistration"),
 		Body:             pageTemplate,
 		ValidationErrors: validationErrors,
 		Article:          article,

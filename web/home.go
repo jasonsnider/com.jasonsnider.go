@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"net/http"
 
+	"github.com/jasonsnider/com.jasonsnider.go/internal/types"
 	"github.com/jasonsnider/com.jasonsnider.go/templates"
 )
 
@@ -72,9 +73,9 @@ func (app *App) Home(w http.ResponseWriter, r *http.Request) {
 
 	pageData := ArticlePageData{
 		Title:        "Jason Snider",
-		Description:  "Jason Snider",
-		Keywords:     "Jason Snider",
-		Body:         "Jason Snider",
+		Description:  types.TypeSqlNullString("Jason Snider"),
+		Keywords:     types.TypeSqlNullString("Jason Snider"),
+		Body:         types.TypeSqlNullString("Jason Snider").String,
 		BustCssCache: app.BustCssCache,
 		BustJsCache:  app.BustJsCache,
 	}

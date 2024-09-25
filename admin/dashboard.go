@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"net/http"
 
+	"github.com/jasonsnider/com.jasonsnider.go/internal/types"
 	"github.com/jasonsnider/com.jasonsnider.go/templates"
 )
 
@@ -25,9 +26,9 @@ func (app *App) Dashboard(w http.ResponseWriter, r *http.Request) {
 	tmpl = template.Must(tmpl.New("dashboard").Parse(pageTemplate))
 
 	pageData := ArticlePageData{
-		Title:        "",
-		Description:  "",
-		Keywords:     "",
+		Title:        "Dashboard",
+		Description:  types.TypeSqlNullString(""),
+		Keywords:     types.TypeSqlNullString(""),
 		Body:         "",
 		BustCssCache: app.BustCssCache,
 		BustJsCache:  app.BustJsCache,

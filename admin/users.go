@@ -19,7 +19,7 @@ type UserCreateTemplate struct {
 	Title            string
 	Body             string
 	ValidationErrors map[string]string
-	CreateUser       types.CreateUser
+	User             types.CreateUser
 	BustCssCache     string
 	BustJsCache      string
 }
@@ -42,14 +42,14 @@ type UsersPageData struct {
 
 func (app *App) CreateUser(w http.ResponseWriter, r *http.Request) {
 	db := db.DB{DB: app.DB}
-	user := types.CreateUser{}
+	user := types.User{}
 	validationErrors := make(map[string]string)
 
 	if r.Method == "POST" {
 		validate := validator.New()
 		validate.RegisterValidation("uniqueEmail", db.UniqueEmail)
 
-		user = types.CreateUser{
+		user = types.User{
 			FirstName: r.FormValue("first_name"),
 			LastName:  r.FormValue("last_name"),
 			Email:     r.FormValue("email"),
@@ -83,12 +83,14 @@ func (app *App) CreateUser(w http.ResponseWriter, r *http.Request) {
 				validationErrors[fieldName] = errorMessage
 			}
 		} else {
-			err = db.CreateUser(user)
+			userID, err := db.CreateUser(user)
+
 			if err != nil {
 				log.Fatalf("failed to create user: %v", err)
 			}
 
 			log.Println("User created successfully")
+			http.Redirect(w, r, "/admin/users/"+userID, http.StatusSeeOther)
 		}
 	}
 
@@ -97,7 +99,7 @@ func (app *App) CreateUser(w http.ResponseWriter, r *http.Request) {
 		<header class="row">
 			<h1 class="col">Create a User</h1>
 			<div class="col-end">
-				<a class="btn" href="/admin/users">Create</a>
+				<a class="btn" href="/admin/users">Users</a>
 			</div>
 		</header>
 
@@ -105,24 +107,24 @@ func (app *App) CreateUser(w http.ResponseWriter, r *http.Request) {
 		<form action="/admin/users/create" method="POST" novalidate>
 			<div class="{{if index .ValidationErrors "FirstName"}}error{{end}}">
 				<label for="first_name">First Name</label>
-				<input type="text" id="FirstName" name="first_name" value="{{.CreateUser.FirstName}}">
+				<input type="text" id="FirstName" name="first_name" value="{{.User.FirstName}}">
 				<div>{{if index .ValidationErrors "FirstName"}}{{index .ValidationErrors "FirstName"}}{{end}}</div>
 			</div>
 			<div class="{{if index .ValidationErrors "LastName"}}error{{end}}">
 				<label for="last_name">Last Name</label>
-				<input type="text" id="LastName" name="last_name" value="{{.CreateUser.LastName}}">
+				<input type="text" id="LastName" name="last_name" value="{{.User.LastName}}">
 				<div>{{if index .ValidationErrors "LastName"}}{{index .ValidationErrors "LastName"}}{{end}}</div>
 			</div>
 			<div class="{{if index .ValidationErrors "Email"}}error{{end}}">
 				<label for="subject">Email</label>
-				<input type="email" id="email" name="email" value="{{.CreateUser.Email}}">
+				<input type="email" id="email" name="email" value="{{.User.Email}}">
 				<div>{{if index .ValidationErrors "Email"}}{{index .ValidationErrors "Email"}}{{end}}</div>
 			</div>
 			<div>
 				<label for="role">Role</label>
 				<select id="role" name="role">
-					<option value="admin" {{if eq .CreateUser.Role "admin"}} selected {{end}}>admin</option>
-					<option value="user" {{if eq .CreateUser.Role "user"}} selected {{end}}>user</option>
+					<option value="admin" {{if eq .User.Role "admin"}} selected {{end}}>admin</option>
+					<option value="user" {{if eq .User.Role "user"}} selected {{end}}>user</option>
 				</select>
 			</div>
 			<button type="submit">Submit</button>
@@ -134,11 +136,11 @@ func (app *App) CreateUser(w http.ResponseWriter, r *http.Request) {
 	tmpl = template.Must(tmpl.New("meta").Parse(templates.MetaDataTemplate))
 	tmpl = template.Must(tmpl.New("create_user").Parse(pageTemplate))
 
-	pageData := UserCreateTemplate{
+	pageData := UserUpdateTemplate{
 		Title:            "Create a user",
 		Body:             pageTemplate,
 		ValidationErrors: validationErrors,
-		CreateUser:       user,
+		User:             user,
 		BustCssCache:     app.BustCssCache,
 		BustJsCache:      app.BustJsCache,
 	}
@@ -169,7 +171,7 @@ func (app *App) ListUsers(w http.ResponseWriter, r *http.Request) {
 
 			{{range .Users}}
 				<div class="row rotate">
-					<div class="col"><a href="/users/{{.ID}}">{{.LastName}}, {{.FirstName}}</a></div>
+					<div class="col"><a href="/admin/users/{{.ID}}">{{.LastName}}, {{.FirstName}}</a></div>
 					<div class="col">{{.Email}}</div>
 					<div class="col">{{.Role}}</div>
 					<div class="col-end">

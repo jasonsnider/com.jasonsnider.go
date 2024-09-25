@@ -1,6 +1,7 @@
 package web
 
 import (
+	"database/sql"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -14,8 +15,8 @@ import (
 
 type ArticlesPageData struct {
 	Title        string
-	Description  string
-	Keywords     string
+	Description  sql.NullString
+	Keywords     sql.NullString
 	Articles     []types.Article
 	BustCssCache string
 	BustJsCache  string
@@ -23,8 +24,8 @@ type ArticlesPageData struct {
 
 type ArticlePageData struct {
 	Title        string
-	Description  string
-	Keywords     string
+	Description  sql.NullString
+	Keywords     sql.NullString
 	Body         string
 	BustCssCache string
 	BustJsCache  string
@@ -61,8 +62,8 @@ func (app *App) ListArticles(w http.ResponseWriter, r *http.Request) {
 
 	pageData := ArticlesPageData{
 		Title:        "Articles",
-		Description:  "A list of articles",
-		Keywords:     "articles, blog",
+		Description:  types.TypeSqlNullString("A list of articles"),
+		Keywords:     types.TypeSqlNullString("articles, blog"),
 		Articles:     articles,
 		BustCssCache: app.BustCssCache,
 		BustJsCache:  app.BustJsCache,
@@ -108,7 +109,7 @@ func (app *App) ViewArticle(w http.ResponseWriter, r *http.Request) {
 		Title:        article.Title,
 		Description:  article.Description,
 		Keywords:     article.Keywords,
-		Body:         article.Body,
+		Body:         article.Body.String,
 		BustCssCache: app.BustCssCache,
 		BustJsCache:  app.BustJsCache,
 	}

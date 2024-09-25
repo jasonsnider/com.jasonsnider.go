@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/jasonsnider/com.jasonsnider.go/internal/types"
 	"github.com/jasonsnider/com.jasonsnider.go/templates"
 	"github.com/mailgun/mailgun-go"
 )
@@ -76,9 +77,6 @@ func (app *App) Contact(w http.ResponseWriter, r *http.Request) {
 			<div>
 				<input type="submit">
 			</div>
-			<div> 
-				<small>This form is submitted using Formspree and all data is sent to a Gmail account. If you are opposed to submitting your data to either of these services you may contact me via LinkedIn or a Twitter (DM) using the social media links below.</small>
-			</div>
 		</form>
 	{{end}}
     `
@@ -88,8 +86,8 @@ func (app *App) Contact(w http.ResponseWriter, r *http.Request) {
 
 	pageData := ArticlePageData{
 		Title:        "Contact",
-		Description:  "Contact Jason Snider",
-		Keywords:     "contact, email",
+		Description:  types.TypeSqlNullString("Contact Jason Snider"),
+		Keywords:     types.TypeSqlNullString("contact, email"),
 		Body:         contactTemplate,
 		BustCssCache: app.BustCssCache,
 		BustJsCache:  app.BustJsCache,

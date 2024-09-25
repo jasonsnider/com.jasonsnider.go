@@ -1,8 +1,10 @@
 package templates
 
+import "database/sql"
+
 type MetaData struct {
 	Title       string
-	Description string
+	Description sql.NullString
 	Keywords    string
 }
 
