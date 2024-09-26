@@ -13,14 +13,16 @@ git clone git@github.com:jasonsnider/com.jasonsnider.go.git
 cd com.jasonsnider.go
 ```
 
-Start the containers
+Start the containers in the required environmnet production|development
 ```sh
-docker compose up -d
+docker compose --profile development up -d
+docker compose --profile production up -d
 ```
 
 Stop the containers
 ```sh
-docker compose down --remove-orphans
+docker compose --profile development down --remove-orphans
+docker compose --profile production down --remove-orphans
 ```
 
 ## Commands
