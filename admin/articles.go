@@ -167,8 +167,8 @@ func (app *App) ListArticles(w http.ResponseWriter, r *http.Request) {
 			{{range .Articles}}
 				<div class="row rotate">
 					<div class="col-4"><a href="/admin/articles/{{.ID}}">{{.Title}}</a></div>
-					<div class="col">{{.Type}}</div>
-					<div class="col">{{.Format}}</div>
+					<div class="col">{{safeValue .Type}}</div>
+					<div class="col">{{safeValue .Format}}</div>
 					<div class="col-end">
 						<a href="/admin/articles/{{.ID}}"><i class="fas fa-eye"></i></a>
 						<a href="/admin/articles/{{.ID}}/edit"><i class="fas fa-edit"></i></a>
@@ -178,7 +178,10 @@ func (app *App) ListArticles(w http.ResponseWriter, r *http.Request) {
 			{{end}}
         {{end}}
     `
-	tmpl := template.Must(template.New("layout").Parse(templates.AdminLayoutTemplate))
+	funcMap := template.FuncMap{
+		"safeValue": types.SafeValue,
+	}
+	tmpl := template.Must(template.New("layout").Funcs(funcMap).Parse(templates.AdminLayoutTemplate))
 	tmpl = template.Must(tmpl.New("content").Parse(articlesTemplate))
 
 	pageData := ArticlesPageData{
