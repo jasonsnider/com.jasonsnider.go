@@ -304,8 +304,8 @@ func (app *App) UpdateArticle(w http.ResponseWriter, r *http.Request) {
 
 			query := `
 				UPDATE articles
-				SET title = $1, description = $2, body = $3, keywords = $4
-				WHERE id = $5
+				SET title = $1, description = $2, keywords = $3, body = $4, type = $5, format = $6, published = $7
+				WHERE id = $8
 			`
 
 			tx, err := app.DB.Begin(context.Background())
@@ -313,7 +313,7 @@ func (app *App) UpdateArticle(w http.ResponseWriter, r *http.Request) {
 				log.Fatalf("begin transaction failed: %v", err)
 			}
 
-			_, err = tx.Exec(context.Background(), query, article.Title, article.Description, article.Body, article.Keywords, article.ID)
+			_, err = tx.Exec(context.Background(), query, article.Title, article.Description, article.Keywords, article.Body, article.Type, article.Format, article.Published, article.ID)
 			if err != nil {
 				tx.Rollback(context.Background())
 				log.Fatalf("update failed: %v", err)
@@ -350,34 +350,37 @@ func (app *App) UpdateArticle(w http.ResponseWriter, r *http.Request) {
 			</div>
 			<div>
 				<label for="body">Article</label>
-				<textarea id="Body" name="body" rows="40">{{if .Article.Published.Valid}}{{.Article.Body}}{{end}}</textarea>
+				<textarea id="Body" name="body" rows="40">{{safeValue .Article.Body}}</textarea>
 			</div>
 			<div>
 				<label for="description">Description</label>
-				<textarea id="Description" name="description">{{if .Article.Published.Valid}}{{.Article.Description}}{{end}}</textarea>
+				<textarea id="Description" name="description">{{safeValue .Article.Description}}</textarea>
 			</div>
 			<div>
 				<label for="keywords">Keywords</label>
-				<textarea id="Keywords" name="keywords">{{if .Article.Published.Valid}}{{.Article.Keywords}}{{end}}</textarea>
+				<textarea id="Keywords" name="keywords">{{safeValue .Article.Keywords}}</textarea>
 			</div>
 			<div>
 				<label for="type">Type</label>
-				<input type="text" id="Type" name="type" value="{{if .Article.Type.Valid}}{{.Article.Type}}{{end}}">
+				<input type="text" id="Type" name="type" value="{{safeValue .Article.Type}}">
 			</div>
 			<div>
 				<label for="format">Format</label>
-				<input type="text" id="Format" name="format" value="{{if .Article.Format.Valid}}{{.Article.Format}}{{end}}">
+				<input type="text" id="Format" name="format" value="{{safeValue .Article.Format}}">
 			</div>
 			<div>
 				<label for="published">Published</label>
-				<input type="text" id="Published" name="published" value="{{if .Article.Published.Valid}}{{.Article.Published}}{{end}}">
+				<input type="text" id="Published" name="published" value="{{safeValue .Article.Published}}">
 			</div>
 			<button type="submit">Submit</button>
 		</form>
 	{{end}}
 	`
+	funcMap := template.FuncMap{
+		"safeValue": types.SafeValue,
+	}
 
-	tmpl := template.Must(template.New("layout").Parse(templates.AdminLayoutTemplate))
+	tmpl := template.Must(template.New("layout").Funcs(funcMap).Parse(templates.AdminLayoutTemplate))
 	tmpl = template.Must(tmpl.New("article").Parse(pageTemplate))
 
 	pageData := ArticleUpdateTemplate{

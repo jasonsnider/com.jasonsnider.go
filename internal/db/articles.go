@@ -74,8 +74,8 @@ func (db *DB) FetchArticlesByType(articleType string) ([]types.Article, error) {
 
 func (db *DB) FetchArticleByID(id string) (types.Article, error) {
 	var article types.Article
-	sql := "SELECT id, title, slug, body, keywords, description FROM articles WHERE id=$1"
-	err := db.DB.QueryRow(context.Background(), sql, id).Scan(&article.ID, &article.Title, &article.Slug, &article.Body, &article.Keywords, &article.Description)
+	sql := "SELECT id, title, slug, body, keywords, description, type, format, published FROM articles WHERE id=$1"
+	err := db.DB.QueryRow(context.Background(), sql, id).Scan(&article.ID, &article.Title, &article.Slug, &article.Body, &article.Keywords, &article.Description, &article.Type, &article.Format, &article.Published)
 	if err != nil {
 		return article, fmt.Errorf("query failed: %v", err)
 	}
