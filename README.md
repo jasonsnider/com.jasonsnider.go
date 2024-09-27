@@ -41,3 +41,25 @@ Compare plain-text to a hash
 ```sh
 go run server.go -mode=check -password="<password>" -hashvalue="<hash>"
 ```
+
+
+## Production Launch
+- Login into the host machine and clone the project
+- `cd com.jasonsnider.go`
+- `cp .env.dist .env`
+- `vim .env`
+- Load the SSL certs into the private directory.
+- `docker compose --profile production up -d`
+
+- Test the DB connection
+- Load the default data.
+
+ ### private directory
+
+```
+- private
+    - ssl
+        - ${NGINX_HOST}
+            - fullchain.pem
+            - privkey.pem
+```
