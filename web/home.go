@@ -59,7 +59,7 @@ func (app *App) Home(w http.ResponseWriter, r *http.Request) {
 			<p>Experience designing and teaching development bootcamps, mentoring junior developers, and leading development teams and efforts.</p>
 			
 			<br><br>
-			<div class="text-center"><a class="btn" href="resume">Resume</a></div></section><section id="SocialMedia">
+			<div class="text-center"><a class="btn" href="articles/resume">Resume</a></div></section><section id="SocialMedia">
 				<a href="https://www.linkedin.com/in/jdsnider"><i class="fab fa-linkedin"><span class="sr-only">LinkedIn</span></i></a>
 				<a href="https://github.com/jasonsnider"><i class="fab fa-github"><span class="sr-only">GitHub</span></i></a>
 				<a href="https://twitter.com/jason_snider"><i class="fab fa-twitter"><span class="sr-only">Twitter</span></i></a>
